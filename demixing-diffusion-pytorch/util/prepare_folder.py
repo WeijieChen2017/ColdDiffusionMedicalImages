@@ -57,7 +57,7 @@ def prepare_folder(data_folder, modality="MR", isDelete=False):
         
 
             # save each group as a *.npy file, with the name of the file as the same as the original file plus the slice number
-            savename = os.join(data_folder, filename.split("/")[-1].split(".")[0] + "_{:04d}".format(idx) + ".npy")
+            savename = os.path.join(data_folder, filename.split("/")[-1].split(".")[0] + "_{:04d}".format(idx) + ".npy")
             
             # save the file with the formative name of 4 digits in the new folder given by the user
             np.save(savename, img_data_new)
