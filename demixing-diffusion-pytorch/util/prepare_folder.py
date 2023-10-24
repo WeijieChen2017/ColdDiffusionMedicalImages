@@ -4,7 +4,7 @@ import tqdm
 import nibabel as nib
 import numpy as np
 
-def prepare_folder(folder_path, modality="MR"):
+def prepare_folder(data_folder, save_folder, modality="MR"):
 
 # for each folder, do the following process
 # here we will load every file with *.nii.gz in the folder given by the user
@@ -17,13 +17,8 @@ def prepare_folder(folder_path, modality="MR"):
 # 6. print out how many slices are saved
 # 7. repeat the above steps for all the files in the folder
 
-    file_list = glob.glob(folder_path + "*.nii.gz")
+    file_list = glob.glob(data_folder + "*.nii.gz")
     print("file_list: ", file_list)
-
-    # create a new folder to save results, with the given name + "2d"
-    save_path = folder_path + "2d/"
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
 
     # create a list to store how many slices in each file
     num_slices = []
@@ -62,7 +57,7 @@ def prepare_folder(folder_path, modality="MR"):
         
 
             # save each group as a *.npy file, with the name of the file as the same as the original file plus the slice number
-            savename = save_path + filename.split("/")[-1].split(".")[0] + "_{:04d}".format(idx) + ".npy"
+            savename = os.join(save_folder, filename.split("/")[-1].split(".")[0] + "_{:04d}".format(idx) + ".npy")
             
             # save the file with the formative name of 4 digits in the new folder given by the user
             np.save(savename, img_data_new)

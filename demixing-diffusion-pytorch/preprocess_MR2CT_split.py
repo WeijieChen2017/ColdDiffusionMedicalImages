@@ -87,29 +87,44 @@ np.random.shuffle(file_list)
 for idx in range(num_train):
     x_filename = file_list[idx, 0]
     y_filename = file_list[idx, 1]
-    train_folder_list.append([x_filename, y_filename])
-    os.system("mv {} {}".format(x_filename, train_folder + "MR/"))
-    os.system("mv {} {}".format(y_filename, train_folder + "CT/"))
-    print("mv {} {}".format(x_filename, train_folder + "MR/"))
-    print("mv {} {}".format(y_filename, train_folder + "CT/"))
+    savename_x = train_folder + "MR/" + os.path.basename(x_filename)
+    savename_y = train_folder + "CT/" + os.path.basename(y_filename)
+    train_folder_list.append({
+        "MR": savename_x,
+        "CT": savename_y,
+    })
+    os.system("mv {} {}".format(x_filename, savename_x))
+    os.system("mv {} {}".format(y_filename, savename_y))
+    print("mv {} {}".format(x_filename, savename_x))
+    print("mv {} {}".format(y_filename, savename_y))
 
 for idx in range(num_train, num_train + num_val):
     x_filename = file_list[idx, 0]
     y_filename = file_list[idx, 1]
-    val_folder_list.append([x_filename, y_filename])
-    os.system("mv {} {}".format(x_filename, val_folder + "MR/"))
-    os.system("mv {} {}".format(y_filename, val_folder + "CT/"))
-    print("mv {} {}".format(x_filename, val_folder + "MR/"))
-    print("mv {} {}".format(y_filename, val_folder + "CT/"))
+    savename_x = val_folder + "MR/" + os.path.basename(x_filename)
+    savename_y = val_folder + "CT/" + os.path.basename(y_filename)
+    val_folder_list.append({
+        "MR": savename_x,
+        "CT": savename_y,
+    })
+    os.system("mv {} {}".format(x_filename, savename_x))
+    os.system("mv {} {}".format(y_filename, savename_y))
+    print("mv {} {}".format(x_filename, savename_x))
+    print("mv {} {}".format(y_filename, savename_y))
 
 for idx in range(num_train + num_val, num_files):
     x_filename = file_list[idx, 0]
     y_filename = file_list[idx, 1]
-    test_folder_list.append([x_filename, y_filename])
-    os.system("mv {} {}".format(x_filename, test_folder + "MR/"))
-    os.system("mv {} {}".format(y_filename, test_folder + "CT/"))
-    print("mv {} {}".format(x_filename, test_folder + "MR/"))
-    print("mv {} {}".format(y_filename, test_folder + "CT/"))
+    savename_x = test_folder + "MR/" + os.path.basename(x_filename)
+    savename_y = test_folder + "CT/" + os.path.basename(y_filename)
+    test_folder_list.append({
+        "MR": savename_x,
+        "CT": savename_y,
+    })
+    os.system("mv {} {}".format(x_filename, savename_x))
+    os.system("mv {} {}".format(y_filename, savename_y))
+    print("mv {} {}".format(x_filename, savename_x))
+    print("mv {} {}".format(y_filename, savename_y))
 
 # save the split as a json file, and save the json file
 json_file = "./data/MR2CT/split.json"
