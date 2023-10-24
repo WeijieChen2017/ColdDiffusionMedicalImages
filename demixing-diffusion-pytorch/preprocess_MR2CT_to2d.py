@@ -35,6 +35,11 @@ num_files = args.num_files
 
 # load the split json
 split_json = "./data/MR2CT/split.json"
+with open(split_json, "r") as f:
+    datasets = json.load(f)
+    train_files = datasets["train"]
+    val_files = datasets["validation"]
+    test_files = datasets["test"]
 
 # construct the file list for train/val/test
 num_train = int(num_files * train_ratio)
@@ -42,4 +47,63 @@ num_val = int(num_files * val_ratio)
 num_test = num_files - num_train - num_val
 print("num_train: ", num_train, "num_val: ", num_val, "num_test: ", num_test)
 
-x_train_file_list = glob.glob(x_path + "/*.nii.gz")
+# create the file list for train/val/test
+train_file_list = train_files[0:num_train]
+val_file_list = val_files[0:num_val]
+test_file_list = test_files[0:num_test]
+
+# create the folders for train/val/test
+x_save_folder_train = x_save_folder + "/train/"
+y_save_folder_train = y_save_folder + "/train/"
+x_save_folder_val = x_save_folder + "/val/"
+y_save_folder_val = y_save_folder + "/val/"
+x_save_folder_test = x_save_folder + "/test/"
+y_save_folder_test = y_save_folder + "/test/"
+for folder in [x_save_folder_train, y_save_folder_train, x_save_folder_val, y_save_folder_val, x_save_folder_test, y_save_folder_test]:
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+        print("create folder: ", folder)
+
+# copy files from the original folder to the new folder
+for filepath_set in train_file_list:
+    x_filepath = filepath_set["MR"]
+    y_filepath = filepath_set["CT"]
+    new_filename_x = x_save_folder_train + x_filepath.split("/")[-1]
+    new_filename_y = y_save_folder_train + y_filepath.split("/")[-1]
+    os.system("cp {} {}".format(x_filepath, new_filename_x))
+    os.system("cp {} {}".format(y_filepath, new_filename_y))
+    print("copy {} to {}".format(x_filepath, new_filename_x))
+    print("copy {} to {}".format(y_filepath, new_filename_y))
+
+for filepath_set in val_file_list:
+    x_filepath = filepath_set["MR"]
+    y_filepath = filepath_set["CT"]
+    new_filename_x = x_save_folder_val + x_filepath.split("/")[-1]
+    new_filename_y = y_save_folder_val + y_filepath.split("/")[-1]
+    os.system("cp {} {}".format(x_filepath, new_filename_x))
+    os.system("cp {} {}".format(y_filepath, new_filename_y))
+    print("copy {} to {}".format(x_filepath, new_filename_x))
+    print("copy {} to {}".format(y_filepath, new_filename_y))
+
+for filepath_set in test_file_list:
+    x_filepath = filepath_set["MR"]
+    y_filepath = filepath_set["CT"]
+    new_filename_x = x_save_folder_test + x_filepath.split("/")[-1]
+    new_filename_y = y_save_folder_test + y_filepath.split("/")[-1]
+    os.system("cp {} {}".format(x_filepath, new_filename_x))
+    os.system("cp {} {}".format(y_filepath, new_filename_y))
+    print("copy {} to {}".format(x_filepath, new_filename_x))
+    print("copy {} to {}".format(y_filepath, new_filename_y))
+
+# prepare the parameters for the prepare_folder function
+data_folder_list = [
+    x_save_folder_train,
+    x_save_folder_val,
+    x_save_folder_test,
+    y_save_folder_train,
+    y_save_folder_val,
+    y_save_folder_test,
+]
+
+for data_folder in data_folder_list:
+    prepare_folder(data_folder, modality="MR", isDelete=True)

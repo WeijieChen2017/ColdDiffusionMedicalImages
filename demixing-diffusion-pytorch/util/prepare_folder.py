@@ -4,7 +4,7 @@ import tqdm
 import nibabel as nib
 import numpy as np
 
-def prepare_folder(data_folder, save_folder, modality="MR"):
+def prepare_folder(data_folder, modality="MR", isDelete=False):
 
 # for each folder, do the following process
 # here we will load every file with *.nii.gz in the folder given by the user
@@ -57,13 +57,17 @@ def prepare_folder(data_folder, save_folder, modality="MR"):
         
 
             # save each group as a *.npy file, with the name of the file as the same as the original file plus the slice number
-            savename = os.join(save_folder, filename.split("/")[-1].split(".")[0] + "_{:04d}".format(idx) + ".npy")
+            savename = os.join(data_folder, filename.split("/")[-1].split(".")[0] + "_{:04d}".format(idx) + ".npy")
             
             # save the file with the formative name of 4 digits in the new folder given by the user
             np.save(savename, img_data_new)
 
         # save the filename and the number of slices in the file
         num_slices.append([filename, d])
+
+        if isDelete:
+            os.remove(filename)
+            print("delete: ", filename)
 
     # print out how many slices are saved
     print("num_slices: ", num_slices)
