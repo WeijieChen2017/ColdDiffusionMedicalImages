@@ -101,8 +101,8 @@ val_ratio = args.val_ratio
 test_ratio = args.test_ratio
 
 # construct the file list
-x_file_list = glob.glob(x_path + "*.nii.gz")
-y_file_list = glob.glob(y_path + "*.nii.gz")
+x_file_list = glob.glob(x_path + "/*.nii.gz")
+y_file_list = glob.glob(y_path + "/*.nii.gz")
 print("MR files num: ", len(x_file_list), "CT files num: ", len(y_file_list))
 
 # sort the file list
