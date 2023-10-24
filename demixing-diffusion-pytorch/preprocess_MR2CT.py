@@ -103,6 +103,7 @@ test_ratio = args.test_ratio
 # construct the file list
 x_file_list = glob.glob(x_path + "*.nii.gz")
 y_file_list = glob.glob(y_path + "*.nii.gz")
+print("MR files num: ", len(x_file_list), "CT files num: ", len(y_file_list))
 
 # sort the file list
 x_file_list.sort()
@@ -120,6 +121,7 @@ num_files = len(x_file_list)
 num_train = int(num_files * train_ratio)
 num_val = int(num_files * val_ratio)
 num_test = num_files - num_train - num_val
+print("num_train: ", num_train, "num_val: ", num_val, "num_test: ", num_test)
 
 # create the folders for train/val/test split
 train_folder = "./data/MR2CT/train/"
@@ -134,10 +136,13 @@ test_folder_list = []
 for folder in [train_folder, val_folder, test_folder]:
     if not os.path.exists(folder):
         os.mkdir(folder)
+        print("create folder: ", folder)
     if not os.path.exists(folder + "MR/"):
         os.mkdir(folder + "MR/")
+        print("create folder: ", folder)
     if not os.path.exists(folder + "CT/"):
         os.mkdir(folder + "CT/")
+        print("create folder: ", folder)
 
 # set the random seed, create a file list and shuffle it
 np.random.seed(args.seed)
@@ -154,6 +159,8 @@ for idx in range(num_train):
     train_folder_list.append([x_filename, y_filename])
     os.system("mv {} {}".format(x_filename, train_folder + "MR/"))
     os.system("mv {} {}".format(y_filename, train_folder + "CT/"))
+    print("mv {} {}".format(x_filename, train_folder + "MR/"))
+    print("mv {} {}".format(y_filename, train_folder + "CT/"))
 
 for idx in range(num_train, num_train + num_val):
     x_filename = file_list[idx, 0]
@@ -161,6 +168,8 @@ for idx in range(num_train, num_train + num_val):
     val_folder_list.append([x_filename, y_filename])
     os.system("mv {} {}".format(x_filename, val_folder + "MR/"))
     os.system("mv {} {}".format(y_filename, val_folder + "CT/"))
+    print("mv {} {}".format(x_filename, val_folder + "MR/"))
+    print("mv {} {}".format(y_filename, val_folder + "CT/"))
 
 for idx in range(num_train + num_val, num_files):
     x_filename = file_list[idx, 0]
@@ -168,6 +177,8 @@ for idx in range(num_train + num_val, num_files):
     test_folder_list.append([x_filename, y_filename])
     os.system("mv {} {}".format(x_filename, test_folder + "MR/"))
     os.system("mv {} {}".format(y_filename, test_folder + "CT/"))
+    print("mv {} {}".format(x_filename, test_folder + "MR/"))
+    print("mv {} {}".format(y_filename, test_folder + "CT/"))
 
 # for each folder, run the function prepare_folder to save the files as *.npy
 for folder in [train_folder, val_folder, test_folder]:
@@ -184,6 +195,7 @@ split_dict = {
 with open(json_file, "w") as f:
     json.dump(split_dict, f, indent=4)
 f.close()
+print("save json file: ", json_file)
 
 
 
