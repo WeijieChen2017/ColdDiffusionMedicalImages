@@ -96,14 +96,20 @@ for filepath_set in test_file_list:
     print("copy {} to {}".format(y_filepath, new_filename_y))
 
 # prepare the parameters for the prepare_folder function
-data_folder_list = [
+MR_folder_list = [
     x_save_folder_train,
     x_save_folder_val,
     x_save_folder_test,
+]
+
+CT_folder_list = [
     y_save_folder_train,
     y_save_folder_val,
     y_save_folder_test,
 ]
 
-for data_folder in data_folder_list:
+for data_folder in MR_folder_list:
     prepare_folder(data_folder, modality="MR", isDelete=True)
+
+for data_folder in CT_folder_list:
+    prepare_folder(data_folder, modality="CT", isDelete=True)
