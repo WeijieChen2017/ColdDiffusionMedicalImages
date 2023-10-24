@@ -38,7 +38,7 @@ split_json = "./data/MR2CT/split.json"
 with open(split_json, "r") as f:
     datasets = json.load(f)
     train_files = datasets["train"]
-    val_files = datasets["validation"]
+    val_files = datasets["val"]
     test_files = datasets["test"]
 
 # construct the file list for train/val/test
