@@ -94,8 +94,8 @@ args = parser.parse_args()
 print(args)
 
 # load the two folders, and the split ratio
-x_path = args.data_path
-y_path = args.save_path
+x_path = args.x_path
+y_path = args.y_path
 train_ratio = args.train_ratio
 val_ratio = args.val_ratio
 test_ratio = args.test_ratio
