@@ -36,9 +36,17 @@ parser.add_argument('--loss_type', default='l1', type=str)
 parser.add_argument('--test_type', default='train_data', type=str)
 parser.add_argument('--noise', default=0, type=float)
 
+# set gpu list
+parser.add_argument('--gpu_list', default='0', type=str)
 
 args = parser.parse_args()
 print(args)
+
+# set gpu list
+gpu_list = args.gpu_list
+os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
+print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 img_path=None
 if 'train' in args.test_type:

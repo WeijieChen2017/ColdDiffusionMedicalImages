@@ -34,10 +34,18 @@ parser.add_argument('--remove_time_embed', action="store_true")
 parser.add_argument('--residual', action="store_true")
 parser.add_argument('--loss_type', default='l1', type=str)
 
+# add options for gpu list
+parser.add_argument('--gpu_list', default='0', type=str)
+
 
 args = parser.parse_args()
 print(args)
 
+# set gpu list
+gpu_list = args.gpu_list
+os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
+print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = Unet(
     dim = 64,
