@@ -46,6 +46,7 @@ print(args)
 gpu_list = args.gpu_list
 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
 print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
+import torch
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 img_path=None
