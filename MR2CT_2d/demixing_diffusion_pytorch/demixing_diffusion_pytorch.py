@@ -530,9 +530,10 @@ class Dataset_Aug1(data.Dataset):
 
         self.transform = transforms.Compose([
             # transforms.Resize((int(image_size*1.12), int(image_size*1.12))),
-            transforms.RandomCrop(image_size),
+            # transforms.RandomCrop(image_size),
             transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
+            transforms.RandomVerticalFlip(),
+            # transforms.ToTensor(),
             # transforms.Lambda(lambda t: (t * 2) - 1)
         ])
 
@@ -556,8 +557,8 @@ class Dataset(data.Dataset):
 
         self.transform = transforms.Compose([
             # transforms.Resize((int(image_size*1.12), int(image_size*1.12))),
-            transforms.CenterCrop(image_size),
-            transforms.ToTensor(),
+            # transforms.CenterCrop(image_size),
+            # transforms.ToTensor(),
             # transforms.Lambda(lambda t: (t * 2) - 1)
         ])
 
@@ -571,7 +572,8 @@ class Dataset(data.Dataset):
         img = torch.from_numpy(img)
         # img = Image.open(path)
         # img = img.convert('RGB')
-        return self.transform(img)
+        return img
+        # return self.transform(img)
 # trainer class
 import os
 import errno
