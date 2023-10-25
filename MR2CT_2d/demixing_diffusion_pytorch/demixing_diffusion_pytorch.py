@@ -542,6 +542,7 @@ class Dataset_Aug1(data.Dataset):
     def __getitem__(self, index):
         path = self.paths[index]
         img = np.load(path)
+        img = torch.from_numpy(img)
         # img = Image.open(path)
         # img = img.convert('RGB')
         return self.transform(img)
@@ -566,6 +567,8 @@ class Dataset(data.Dataset):
     def __getitem__(self, index):
         path = self.paths[index]
         img = np.load(path)
+        # convert img to pytorch tensor
+        img = torch.from_numpy(img)
         # img = Image.open(path)
         # img = img.convert('RGB')
         return self.transform(img)
