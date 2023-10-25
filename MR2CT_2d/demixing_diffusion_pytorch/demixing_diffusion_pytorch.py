@@ -531,8 +531,9 @@ class Dataset_Aug1(data.Dataset):
         self.transform = transforms.Compose([
             # transforms.Resize((int(image_size*1.12), int(image_size*1.12))),
             # transforms.RandomCrop(image_size),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomVerticalFlip(),
+            # make sure the channel first
+            # transforms.RandomHorizontalFlip(),
+            # transforms.RandomVerticalFlip(),
             # transforms.ToTensor(),
             # transforms.Lambda(lambda t: (t * 2) - 1)
         ])
@@ -546,7 +547,8 @@ class Dataset_Aug1(data.Dataset):
         img = torch.from_numpy(img)
         # img = Image.open(path)
         # img = img.convert('RGB')
-        return self.transform(img)
+        return img
+        # return self.transform(img)
 
 class Dataset(data.Dataset):
     def __init__(self, folder, image_size, exts=['npy']):
