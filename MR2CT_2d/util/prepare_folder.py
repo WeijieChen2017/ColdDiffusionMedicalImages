@@ -40,22 +40,16 @@ def prepare_folder(data_folder, modality="MR", isDelete=False):
         else:
             raise ValueError("modality should be MR or CT")
 
-        # known the shape of the file is w * h * d, and we save 3 adjacent slices as a group, in the shape of w * h * 3
+        # known the shape of the file is w * h * d, and we save 3 adjacent slices as a group, in the shape of 3* w * h
         w, h, d = img_data.shape
-        img_data_new = np.zeros((w, h, 3))
+        img_data_new = np.zeros((3, w, h))
 
-        # iterate through the slices
-        for idx in range(d):
-
-            if idx == 0:
-                img_data_new = img_data[:, :, 0:3]
-            elif idx == d - 1:
-                img_data_new = img_data[:, :, d - 3:d]
-            else:
-                img_data_new = img_data[:, :, idx - 1:idx + 2]
-
-        
-
+        # save 3 adjacent slices as a group
+        for idx in range(d - 2):
+            img_data_new[0, :, :] = img_data[:, :, idx]
+            img_data_new[1, :, :] = img_data[:, :, idx + 1]
+            img_data_new[2, :, :] = img_data[:, :, idx + 2]
+            
             # save each group as a *.npy file, with the name of the file as the same as the original file plus the slice number
             savename = os.path.join(data_folder, filename.split("/")[-1].split(".")[0] + "_{:04d}".format(idx) + ".npy")
             
