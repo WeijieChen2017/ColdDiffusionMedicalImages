@@ -65,9 +65,7 @@ y_save_folder_val = y_save_folder + "/val/"
 x_save_folder_test = x_save_folder + "/test/"
 y_save_folder_test = y_save_folder + "/test/"
 for folder in [x_save_folder_train, y_save_folder_train, x_save_folder_val, y_save_folder_val, x_save_folder_test, y_save_folder_test]:
-    if not os.path.exists(folder):
-        os.mkdir(folder)
-        print("create folder: ", folder)
+    os.makedirs(folder, exist_ok=True)
 
 # copy files from the original folder to the new folder
 for filepath_set in train_file_list:
