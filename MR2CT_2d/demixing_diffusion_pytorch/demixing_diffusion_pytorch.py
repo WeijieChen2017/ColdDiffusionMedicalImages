@@ -521,62 +521,131 @@ class GaussianDiffusion(nn.Module):
         t = torch.randint(0, self.num_timesteps, (b,), device=device).long()
         return self.p_losses(x1, x2, t, *args, **kwargs)
 
-class Dataset_Aug1(data.Dataset):
-    def __init__(self, folder, image_size, exts = ['npy']):
+class DatasetPaired_Aug(data.Dataset):
+    def __init__(self, folder, image_size, keywords=['MR_x', 'CT_y'], exts=['npy']):
         super().__init__()
         self.folder = folder
         self.image_size = image_size
+        self.keywords = keywords
         self.paths = [p for ext in exts for p in Path(f'{folder}').glob(f'**/*.{ext}')]
 
         self.transform = transforms.Compose([
-            # transforms.Resize((int(image_size*1.12), int(image_size*1.12))),
-            # transforms.RandomCrop(image_size),
-            # make sure the channel first
+            # Add any other transformations that should be applied to both images
             transforms.RandomHorizontalFlip(),
             transforms.RandomVerticalFlip(),
-            # transforms.ToTensor(),
-            # transforms.Lambda(lambda t: (t * 2) - 1)
+            # Add more transformations as needed
         ])
 
     def __len__(self):
-        return len(self.paths)
+        # Ensure that the number of images is even
+        return len(self.paths) // 2
 
     def __getitem__(self, index):
-        path = self.paths[index]
-        img = np.load(path).astype(np.float32)
-        # convert img from double to float
-        img = torch.from_numpy(img)
-        # img = Image.open(path)
-        # img = img.convert('RGB')
-        # return img
-        return self.transform(img)
+        # Load two images and ensure that they are paired correctly
+        # the path 2 is to replace the keyword[0] in path1 to keyword[2]
+        path1 = self.paths[index]
+        path2 = self.paths[index].replace(self.keywords[0], self.keywords[1])
+        
+        img1 = np.load(path1).astype(np.float32)
+        img2 = np.load(path2).astype(np.float32)
+        
+        img1 = torch.from_numpy(img1)
+        img2 = torch.from_numpy(img2)
+        
+        # Apply the same transformations to both images
+        img1 = self.transform(img1)
+        img2 = self.transform(img2)
+        
+        return img1, img2
 
-class Dataset(data.Dataset):
-    def __init__(self, folder, image_size, exts=['npy']):
+class DatasetPaired(data.Dataset):
+    def __init__(self, folder, image_size, keywords=['MR_x', 'CT_y'], exts=['npy']):
         super().__init__()
         self.folder = folder
         self.image_size = image_size
+        self.keywords = keywords
         self.paths = [p for ext in exts for p in Path(f'{folder}').glob(f'**/*.{ext}')]
 
         self.transform = transforms.Compose([
-            # transforms.Resize((int(image_size*1.12), int(image_size*1.12))),
-            # transforms.CenterCrop(image_size),
-            # transforms.ToTensor(),
-            # transforms.Lambda(lambda t: (t * 2) - 1)
+            # Add any other transformations that should be applied to both images
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            # Add more transformations as needed
         ])
 
     def __len__(self):
         return len(self.paths)
 
     def __getitem__(self, index):
-        path = self.paths[index]
-        img = np.load(path).astype(np.float32)
-        # convert img to pytorch tensor
-        img = torch.from_numpy(img)
-        # img = Image.open(path)
-        # img = img.convert('RGB')
-        return img
-        # return self.transform(img)
+        # Load two images and ensure that they are paired correctly
+        path1 = self.paths[index]
+        path2 = str(self.paths[index]).replace(self.keywords[0], self.keywords[1])
+        
+        img1 = np.load(path1).astype(np.float32)
+        img2 = np.load(path2).astype(np.float32)
+        
+        img1 = torch.from_numpy(img1)
+        img2 = torch.from_numpy(img2)
+        
+        return img1, img2
+    
+# class Dataset_Aug1(data.Dataset):
+#     def __init__(self, folder, image_size, exts = ['npy']):
+#         super().__init__()
+#         self.folder = folder
+#         self.image_size = image_size
+#         self.paths = [p for ext in exts for p in Path(f'{folder}').glob(f'**/*.{ext}')]
+
+#         self.transform = transforms.Compose([
+#             # transforms.Resize((int(image_size*1.12), int(image_size*1.12))),
+#             # transforms.RandomCrop(image_size),
+#             # make sure the channel first
+#             transforms.RandomHorizontalFlip(),
+#             transforms.RandomVerticalFlip(),
+#             # transforms.ToTensor(),
+#             # transforms.Lambda(lambda t: (t * 2) - 1)
+#         ])
+
+#     def __len__(self):
+#         return len(self.paths)
+
+#     def __getitem__(self, index):
+#         path = self.paths[index]
+#         img = np.load(path).astype(np.float32)
+#         # convert img from double to float
+#         img = torch.from_numpy(img)
+#         # img = Image.open(path)
+#         # img = img.convert('RGB')
+#         # return img
+#         return self.transform(img)
+
+# class Dataset(data.Dataset):
+#     def __init__(self, folder, image_size, exts=['npy']):
+#         super().__init__()
+#         self.folder = folder
+#         self.image_size = image_size
+#         self.paths = [p for ext in exts for p in Path(f'{folder}').glob(f'**/*.{ext}')]
+
+#         self.transform = transforms.Compose([
+#             # transforms.Resize((int(image_size*1.12), int(image_size*1.12))),
+#             # transforms.CenterCrop(image_size),
+#             # transforms.ToTensor(),
+#             # transforms.Lambda(lambda t: (t * 2) - 1)
+#         ])
+
+#     def __len__(self):
+#         return len(self.paths)
+
+#     def __getitem__(self, index):
+#         path = self.paths[index]
+#         img = np.load(path).astype(np.float32)
+#         # convert img to pytorch tensor
+#         img = torch.from_numpy(img)
+#         # img = Image.open(path)
+#         # img = img.convert('RGB')
+#         return img
+#         # return self.transform(img)
+
 # trainer class
 import os
 import errno
@@ -612,7 +681,7 @@ class Trainer(object):
         self,
         diffusion_model,
         folder1,
-        folder2,
+        # folder2,
         *,
         ema_decay = 0.995,
         image_size = 128,
@@ -645,15 +714,15 @@ class Trainer(object):
 
         if dataset == 'train':
             print(dataset, "DA used")
-            self.ds1 = Dataset_Aug1(folder1, image_size)
-            self.ds2 = Dataset_Aug1(folder2, image_size)
+            self.ds1 = DatasetPaired_Aug(folder1, image_size)
+            # self.ds2 = DatasetPaired_Aug(folder2, image_size)
         else:
             print(dataset)
-            self.ds1 = Dataset(folder1, image_size)
-            self.ds2 = Dataset(folder2, image_size)
+            self.ds1 = DatasetPaired(folder1, image_size)
+            # self.ds2 = DatasetPaired(folder2, image_size)
 
         self.dl1 = cycle(data.DataLoader(self.ds1, batch_size = train_batch_size, shuffle=shuffle, pin_memory=True, num_workers=16, drop_last=True))
-        self.dl2 = cycle(data.DataLoader(self.ds2, batch_size=train_batch_size, shuffle=shuffle, pin_memory=True, num_workers=16, drop_last=True))
+        # self.dl2 = cycle(data.DataLoader(self.ds2, batch_size = train_batch_size, shuffle=shuffle, pin_memory=True, num_workers=16, drop_last=True))
 
         self.opt = Adam(diffusion_model.parameters(), lr=train_lr)
         self.step = 0
@@ -731,8 +800,8 @@ class Trainer(object):
         while self.step < self.train_num_steps:
             u_loss = 0
             for i in range(self.gradient_accumulate_every):
-                data_1 = next(self.dl1).cuda()
-                data_2 = next(self.dl2).cuda()
+                data_1, data_2 = next(self.dl1).cuda()
+                # data_2 = next(self.dl2).cuda()
                 loss = torch.mean(self.model(data_1, data_2))
                 if self.step % 100 == 0:
                     print(f'{self.step}: {loss.item()}')
@@ -751,7 +820,9 @@ class Trainer(object):
                 # experiment.log_current_epoch(self.step)
                 milestone = self.step // self.save_and_sample_every
                 batches = self.batch_size
-                og_img = next(self.dl2).cuda()
+                img_1, img_2 = next(self.dl1).cuda()
+                # og_img = next(self.dl2).cuda()
+                og_img = img_1
 
                 xt, direct_recons, all_images = self.ema_model.module.sample(batch_size=batches, img=og_img)
 
@@ -783,7 +854,10 @@ class Trainer(object):
 
     def test_from_data(self, extra_path, s_times=None):
         batches = self.batch_size
-        og_img = next(self.dl2).cuda()
+        img_1, img_2 = next(self.dl1).cuda()
+        # og_img = next(self.dl2).cuda()
+        og_img = img_1
+        # og_img = next(self.dl2).cuda()
 
         X_0s, X_ts = self.ema_model.module.all_sample(batch_size=batches, img=og_img, times=s_times)
 
@@ -827,7 +901,10 @@ class Trainer(object):
         cnt = 0
         bs = self.batch_size
         for j in range(int(6400/self.batch_size)):
-            og_img = next(self.dl2).cuda()
+            img_1, img_2 = next(self.dl1).cuda()
+                # og_img = next(self.dl2).cuda()
+            og_img = img_1
+            # og_img = next(self.dl2).cuda()
             print(og_img.shape)
 
             xt, direct_recons, all_images = self.ema_model.module.gen_sample(batch_size=bs, img=og_img,
@@ -855,8 +932,9 @@ class Trainer(object):
 
         for i in range(5):
             batches = self.batch_size
-            og_img_1 = next(self.dl1).cuda()
-            og_img_2 = next(self.dl2).cuda()
+            og_img_1, og_img_2 = next(self.dl1).cuda()
+            # og_img_1 = next(self.dl1).cuda()
+            # og_img_2 = next(self.dl2).cuda()
             print(og_img_1.shape)
 
             Forward, Backward, final_all = self.ema_model.module.forward_and_backward(batch_size=batches, img1=og_img_1, img2=og_img_2)
