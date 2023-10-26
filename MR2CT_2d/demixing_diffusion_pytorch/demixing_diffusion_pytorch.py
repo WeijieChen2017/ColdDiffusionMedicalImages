@@ -692,7 +692,7 @@ class Trainer(object):
         fp16 = False,
         step_start_ema = 2000,
         update_ema_every = 10,
-        save_and_sample_every = 100,
+        save_and_sample_every = 50,
         results_folder = './results',
         load_path = None,
         dataset = None,
@@ -826,6 +826,7 @@ class Trainer(object):
                 # img_2.cuda()
                 # og_img = next(self.dl2).cuda()
                 og_img = img_1.cuda()
+                xt_img = img_2.cuda()
 
                 xt, direct_recons, all_images = self.ema_model.module.sample(batch_size=batches, img=og_img)
 
@@ -838,8 +839,8 @@ class Trainer(object):
                 direct_recons = (direct_recons + 1) * 0.5
                 utils.save_image(direct_recons, str(self.results_folder / f'sample-direct_recons-{milestone}.png'), nrow=6)
 
-                xt = (xt + 1) * 0.5
-                utils.save_image(xt, str(self.results_folder / f'sample-xt-{milestone}.png'),
+                # xt = (xt + 1) * 0.5
+                utils.save_image(xt_img, str(self.results_folder / f'sample-xt-{milestone}.png'),
                                  nrow=6)
 
                 acc_loss = acc_loss/(self.save_and_sample_every+1)
