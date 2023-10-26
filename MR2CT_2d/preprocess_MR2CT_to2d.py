@@ -41,16 +41,21 @@ with open(split_json, "r") as f:
     val_files = datasets["val"]
     test_files = datasets["test"]
 
-# construct the file list for train/val/test
-num_train = int(num_files * train_ratio)
-num_val = int(num_files * val_ratio)
-num_test = num_files - num_train - num_val
-print("num_train: ", num_train, "num_val: ", num_val, "num_test: ", num_test)
+if num_files > 0:
+    # construct the file list for train/val/test
+    num_train = int(num_files * train_ratio)
+    num_val = int(num_files * val_ratio)
+    num_test = num_files - num_train - num_val
+    print("num_train: ", num_train, "num_val: ", num_val, "num_test: ", num_test)
 
-# create the file list for train/val/test
-train_file_list = train_files[0:num_train]
-val_file_list = val_files[0:num_val]
-test_file_list = test_files[0:num_test]
+    # create the file list for train/val/test
+    train_file_list = train_files[0:num_train]
+    val_file_list = val_files[0:num_val]
+    test_file_list = test_files[0:num_test]
+else:
+    train_file_list = train_files
+    val_file_list = val_files
+    test_file_list = test_files
 
 # create the folders for train/val/test
 x_save_folder_train = x_save_folder + "/train/"
