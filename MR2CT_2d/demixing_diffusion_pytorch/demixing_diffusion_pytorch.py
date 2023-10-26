@@ -692,7 +692,7 @@ class Trainer(object):
         fp16 = False,
         step_start_ema = 2000,
         update_ema_every = 10,
-        save_and_sample_every = 1000,
+        save_and_sample_every = 100,
         results_folder = './results',
         load_path = None,
         dataset = None,
@@ -823,10 +823,9 @@ class Trainer(object):
                 milestone = self.step // self.save_and_sample_every
                 batches = self.batch_size
                 img_1, img_2 = next(self.dl1)
-                img_1.cuda()
                 # img_2.cuda()
                 # og_img = next(self.dl2).cuda()
-                og_img = img_1
+                og_img = img_1.cuda()
 
                 xt, direct_recons, all_images = self.ema_model.module.sample(batch_size=batches, img=og_img)
 
@@ -859,10 +858,9 @@ class Trainer(object):
     def test_from_data(self, extra_path, s_times=None):
         batches = self.batch_size
         img_1, img_2 = next(self.dl1)
-        img_1.cuda()
         # img_2.cuda()
         # og_img = next(self.dl2).cuda()
-        og_img = img_1
+        og_img = img_1.cuda()
         # og_img = next(self.dl2).cuda()
 
         X_0s, X_ts = self.ema_model.module.all_sample(batch_size=batches, img=og_img, times=s_times)
@@ -908,10 +906,9 @@ class Trainer(object):
         bs = self.batch_size
         for j in range(int(6400/self.batch_size)):
             img_1, img_2 = next(self.dl1)
-            img_1.cuda()
             # img_2.cuda()
                 # og_img = next(self.dl2).cuda()
-            og_img = img_1
+            og_img = img_1.cuda()
             # og_img = next(self.dl2).cuda()
             print(og_img.shape)
 
