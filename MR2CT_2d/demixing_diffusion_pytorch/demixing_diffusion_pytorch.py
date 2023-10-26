@@ -544,7 +544,7 @@ class DatasetPaired_Aug(data.Dataset):
         # Load two images and ensure that they are paired correctly
         # the path 2 is to replace the keyword[0] in path1 to keyword[2]
         path1 = self.paths[index]
-        path2 = self.paths[index].replace(self.keywords[0], self.keywords[1])
+        path2 = Path(str(path1).replace(self.keywords[0], self.keywords[1]))
         
         img1 = np.load(path1).astype(np.float32)
         img2 = np.load(path2).astype(np.float32)
@@ -579,7 +579,7 @@ class DatasetPaired(data.Dataset):
     def __getitem__(self, index):
         # Load two images and ensure that they are paired correctly
         path1 = self.paths[index]
-        path2 = str(self.paths[index]).replace(self.keywords[0], self.keywords[1])
+        path2 = Path(str(path1).replace(self.keywords[0], self.keywords[1]))
         
         img1 = np.load(path1).astype(np.float32)
         img2 = np.load(path2).astype(np.float32)
