@@ -580,7 +580,7 @@ class DatasetPaired(data.Dataset):
         # Load two images and ensure that they are paired correctly
         path1 = self.paths[index]
         path2 = Path(str(path1).replace(self.keywords[0], self.keywords[1]))
-        
+
         img1 = np.load(path1).astype(np.float32)
         img2 = np.load(path2).astype(np.float32)
         
@@ -800,7 +800,9 @@ class Trainer(object):
         while self.step < self.train_num_steps:
             u_loss = 0
             for i in range(self.gradient_accumulate_every):
-                data_1, data_2 = next(self.dl1).cuda()
+                data_1, data_2 = next(self.dl1)
+                data_1.cuda()
+                data_2.cuda()
                 # data_2 = next(self.dl2).cuda()
                 loss = torch.mean(self.model(data_1, data_2))
                 if self.step % 100 == 0:
@@ -820,7 +822,9 @@ class Trainer(object):
                 # experiment.log_current_epoch(self.step)
                 milestone = self.step // self.save_and_sample_every
                 batches = self.batch_size
-                img_1, img_2 = next(self.dl1).cuda()
+                img_1, img_2 = next(self.dl1)
+                img_1.cuda()
+                # img_2.cuda()
                 # og_img = next(self.dl2).cuda()
                 og_img = img_1
 
@@ -854,7 +858,9 @@ class Trainer(object):
 
     def test_from_data(self, extra_path, s_times=None):
         batches = self.batch_size
-        img_1, img_2 = next(self.dl1).cuda()
+        img_1, img_2 = next(self.dl1)
+        img_1.cuda()
+        # img_2.cuda()
         # og_img = next(self.dl2).cuda()
         og_img = img_1
         # og_img = next(self.dl2).cuda()
@@ -901,7 +907,9 @@ class Trainer(object):
         cnt = 0
         bs = self.batch_size
         for j in range(int(6400/self.batch_size)):
-            img_1, img_2 = next(self.dl1).cuda()
+            img_1, img_2 = next(self.dl1)
+            img_1.cuda()
+            # img_2.cuda()
                 # og_img = next(self.dl2).cuda()
             og_img = img_1
             # og_img = next(self.dl2).cuda()
@@ -932,7 +940,9 @@ class Trainer(object):
 
         for i in range(5):
             batches = self.batch_size
-            og_img_1, og_img_2 = next(self.dl1).cuda()
+            og_img_1, og_img_2 = next(self.dl1)
+            og_img_1.cuda()
+            og_img_2.cuda()
             # og_img_1 = next(self.dl1).cuda()
             # og_img_2 = next(self.dl2).cuda()
             print(og_img_1.shape)
