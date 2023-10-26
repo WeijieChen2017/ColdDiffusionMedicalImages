@@ -72,8 +72,9 @@ diffusion = torch.nn.DataParallel(diffusion, device_ids=range(torch.cuda.device_
 
 trainer = Trainer(
     diffusion,
-    args.data_path_end,
     args.data_path_start,
+    # args.data_path_end,
+    # args.data_path_start,
     image_size = 256,
     train_batch_size = 24,
     train_lr = 2e-5,
