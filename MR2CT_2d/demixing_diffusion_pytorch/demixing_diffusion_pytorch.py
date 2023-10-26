@@ -553,8 +553,8 @@ class DatasetPaired_Aug(data.Dataset):
         img2 = torch.from_numpy(img2)
         
         # Apply the same transformations to both images
-        img1 = self.transform(img1)
-        img2 = self.transform(img2)
+        # img1 = self.transform(img1)
+        # img2 = self.transform(img2)
         
         return img1, img2
 
@@ -840,8 +840,7 @@ class Trainer(object):
                 utils.save_image(direct_recons, str(self.results_folder / f'sample-direct_recons-{milestone}.png'), nrow=6)
 
                 # xt = (xt + 1) * 0.5
-                utils.save_image(xt_img, str(self.results_folder / f'sample-xt-{milestone}.png'),
-                                 nrow=6)
+                utils.save_image(xt_img, str(self.results_folder / f'sample-xt-{milestone}.png'), nrow=6)
 
                 acc_loss = acc_loss/(self.save_and_sample_every+1)
                 # experiment.log_metric("Training Loss", acc_loss, step=self.step)
