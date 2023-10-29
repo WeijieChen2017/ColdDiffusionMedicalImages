@@ -4,7 +4,6 @@ import torch
 from torch import nn
 from functools import partial
 
-from torch.utils import data
 from pathlib import Path
 from torch.optim import Adam
 from torchvision import utils
@@ -20,8 +19,7 @@ import torch
 from torch.nn import L1Loss, MSELoss
 
 from .network import EMA
-from .dataset import DatasetPaired_Aug, DatasetPaired
-from .utils import cycle, loss_backwards
+from .utils import loss_backwards
 
 # trainer class
 
