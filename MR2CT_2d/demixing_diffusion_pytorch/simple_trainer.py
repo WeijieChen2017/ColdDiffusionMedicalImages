@@ -75,7 +75,8 @@ class simple_trainer(object):
         self.loss_type = loss_type
         self.loss_fn = L1Loss() if loss_type == 'l1' else MSELoss()
         self.dataloader = data_loader
-
+        self.max_time = torch.tensor(self.time_steps, dtype=torch.float)
+        self.max_time = self.max_time.expand(self.batch_size).to(device='cuda')
 
     def reset_parameters(self):
         self.ema_model.load_state_dict(self.model.state_dict())
@@ -170,10 +171,8 @@ class simple_trainer(object):
                 data_t1, data_t2, t_1, t_2, t_1_int, t_2_int = self.generate_xt1_xt2(data_1, data_2, device='cuda')
                 # create max_time as a tensor of shape batch_size
                 # given that the max_time is self.time_steps as a int
-                max_time = torch.tensor(self.time_steps, dtype=torch.float)
-                max_time = max_time.expand(data_1.shape[0]).to(device='cuda')
                 data_t2_hat = self.model(data_t1, t_2-t_1)
-                data_syn_t2 = self.model(data_t1, max_time)
+                data_syn_t2 = self.model(data_t1, self.max_time)
 
                 imgs_to_plot = [
                     # imgs, title
@@ -181,8 +180,8 @@ class simple_trainer(object):
                     [data_2, 'CT'],
                     [data_syn_t2, 'synCT'],
                     # include the time step t_1_int in the title
-                    [data_t1, f'data_t1_{t_1_int}'],
-                    [data_t2, f'data_t2_{t_2_int}'],
+                    [data_t1, f'data_t1_{int(t_1_int)}'],
+                    [data_t2, f'data_t2_{int(t_2_int)}'],
                     [data_t2_hat, 'data_t2_hat'],
                 ]
 
