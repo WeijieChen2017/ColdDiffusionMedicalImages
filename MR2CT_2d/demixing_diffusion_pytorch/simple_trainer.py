@@ -172,6 +172,7 @@ class simple_trainer(object):
                 # create max_time as a tensor of shape batch_size
                 # given that the max_time is self.time_steps as a int
                 data_t2_hat = self.model(data_t1, t_2-t_1)
+                data_1 = data_1.to(device='cuda')
                 data_syn_t2 = self.model(data_1, self.max_time)
 
                 imgs_to_plot = [
