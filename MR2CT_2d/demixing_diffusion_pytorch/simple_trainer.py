@@ -40,7 +40,7 @@ class simple_trainer(object):
         fp16 = False,
         step_start_ema = 2000,
         update_ema_every = 10,
-        save_and_sample_every = 1000,
+        save_and_sample_every = 50,
         results_folder = './results',
         load_path = None,
     ):
@@ -123,8 +123,8 @@ class simple_trainer(object):
         alpha_1 = alpha_1.view(-1, 1, 1, 1)
         alpha_2 = alpha_2.view(-1, 1, 1, 1)
 
-        data_t1 = alpha_1 * data_1 + (1 - alpha_1) * data_2
-        data_t2 = alpha_2 * data_1 + (1 - alpha_2) * data_2
+        data_t1 = (1 - alpha_1) * data_1 + (alpha_1) * data_2
+        data_t2 = (1 - alpha_2) * data_1 + (alpha_2) * data_2
 
         # move to device
         data_t1 = data_t1.to(device)
