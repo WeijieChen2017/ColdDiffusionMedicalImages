@@ -14,7 +14,7 @@ parser.add_argument('--load_path', default=None, type=str)
 parser.add_argument('--time_emb', action="store_true")
 parser.add_argument('--residual', action="store_true")
 parser.add_argument('--loss_type', default='l1', type=str)
-parser.add_argument('--gpu_list', default='0', type=str)
+parser.add_argument('--gpu_list', default='3', type=str)
 
 
 args = parser.parse_args()
