@@ -1,4 +1,5 @@
 # from comet_ml import Expeiment
+import gc
 import copy
 import torch
 from torch import nn
@@ -172,14 +173,14 @@ class simple_trainer(object):
                 # create max_time as a tensor of shape batch_size
                 # given that the max_time is self.time_steps as a int
                 data_t2_hat = self.model(data_t1, t_2-t_1)
-                data_1 = data_1.to(device='cuda')
-                data_syn_t2 = self.model(data_1, self.max_time)
+                # data_1 = data_1.to(device='cuda')
+                # data_syn_t2 = self.model(data_1, self.max_time)
 
                 imgs_to_plot = [
                     # imgs, title
                     [data_1, 'MR'],
                     [data_2, 'CT'],
-                    [data_syn_t2, 'synCT'],
+                    # [data_syn_t2, 'synCT'],
                     # include the time step t_1_int in the title
                     [data_t1, f'data_t1_{int(t_1_int)}'],
                     [data_t2, f'data_t2_{int(t_2_int)}'],
@@ -190,6 +191,9 @@ class simple_trainer(object):
                 for imgs, title in imgs_to_plot:
                     imgs = imgs.detach().cpu()
                     utils.save_image(imgs, str(self.results_folder / f'{title}-{milestone}.png'), nrow=4)
+                    del imgs
+
+                gc.collect()
 
                 acc_loss = acc_loss/(self.save_and_sample_every+1)
                 # experiment.log_metric("Training Loss", acc_loss, step=self.step)
