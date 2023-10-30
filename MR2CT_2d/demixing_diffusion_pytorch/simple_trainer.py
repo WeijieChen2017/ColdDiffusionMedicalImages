@@ -170,7 +170,8 @@ class simple_trainer(object):
                 data_t1, data_t2, t_1, t_2, t_1_int, t_2_int = self.generate_xt1_xt2(data_1, data_2, device='cuda')
                 # create max_time as a tensor of shape batch_size
                 # given that the max_time is self.time_steps as a int
-                max_time = torch.tensor(self.time_steps, dtype=torch.float).to(device = 'cuda')
+                max_time = torch.tensor(self.time_steps, dtype=torch.float)
+                max_time = max_time.expand(data_1.shape[0]).to(device='cuda')
                 data_t2_hat = self.model(data_t1, t_2-t_1)
                 data_syn_t2 = self.model(data_t1, max_time)
 
