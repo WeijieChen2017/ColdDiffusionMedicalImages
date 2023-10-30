@@ -166,21 +166,26 @@ class simple_trainer(object):
             if self.step != 0 and self.step % self.save_and_sample_every == 0:
                 # experiment.log_current_epoch(self.step)
                 milestone = self.step // self.save_and_sample_every
-                batches = self.batch_size
                 data_1, data_2 = next(self.dataloader)
                 data_t1, data_t2, t_1, t_2 = self.generate_xt1_xt2(data_1, data_2, device='cuda')
                 data_t2_hat = self.model(data_t1, t_2-t_1)
+                data_syn_t2 = self.model(data_t1, self.time_steps)
 
                 imgs_to_plot = [
                     # imgs, title
-                    [data_1, 'data_1'],
-                    [data_2, 'data_2'],
+                    [data_1, 'MR'],
+                    [data_2, 'CT'],
+                    [data_syn_t2, 'synCT'],
                     [data_t1, 'data_t1'],
                     [data_t2, 'data_t2'],
                     [data_t2_hat, 'data_t2_hat'],
                 ]
 
                 # iteratively plot
+                for imgs, title in imgs_to_plot:
+                    imgs = imgs.detach().cpu()
+                    utils.save_image(imgs, str(self.results_folder / f'{title}-{milestone}.png'), nrow=6)
+
                 for imgs, title in imgs_to_plot:
                     imgs = imgs.detach().cpu()
                     utils.save_image(imgs, str(self.results_folder / f'{title}-{milestone}.png'), nrow=6)
