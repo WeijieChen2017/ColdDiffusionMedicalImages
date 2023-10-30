@@ -7,6 +7,7 @@ from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, simple_trainer, 
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=100, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
+parser.add_argument('--batch_size', default=16, type=int)   
 parser.add_argument('--save_folder', default='./proj/MR2CT_simpleUNet/', type=str)
 parser.add_argument('--data_path', default='./data/MR2CT/MR_x_2d/', type=str)
 parser.add_argument('--load_path', default=None, type=str)
@@ -39,13 +40,12 @@ dataloader = cycle(data.DataLoader(
         folder = args.data_path,
         image_size = 256,)
     , 
-    batch_size = 24, 
+    batch_size = args.batch_size, 
     shuffle="True", 
     pin_memory=True, 
     num_workers=16, 
     drop_last=True)
 )
-
 
 trainer = simple_trainer(
     model,
@@ -53,7 +53,7 @@ trainer = simple_trainer(
     time_steps = args.time_steps,
     loss_type = args.loss_type,
     image_size = 256,
-    train_batch_size = 16,
+    train_batch_size = args.batch_size,
     train_lr = 2e-5,
     train_num_steps = args.train_epochs,         # total training steps
     gradient_accumulate_every = 2,    # gradient accumulation steps
