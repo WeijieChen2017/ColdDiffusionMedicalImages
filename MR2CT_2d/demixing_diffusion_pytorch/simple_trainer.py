@@ -41,7 +41,7 @@ class simple_trainer(object):
         fp16 = False,
         step_start_ema = 2000,
         update_ema_every = 10,
-        save_and_sample_every = 50,
+        save_and_sample_every = 1000,
         results_folder = './results',
         load_path = None,
     ):
