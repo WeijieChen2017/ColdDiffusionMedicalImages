@@ -5,7 +5,7 @@ from torch.utils import data
 from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, simple_trainer, cycle
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--time_steps', default=100, type=int)
+parser.add_argument('--time_steps', default=1000, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
 parser.add_argument('--batch_size', default=8, type=int)   
 parser.add_argument('--save_folder', default='./proj/MR2CT_simpleUNet/', type=str)
