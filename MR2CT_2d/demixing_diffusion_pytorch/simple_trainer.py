@@ -168,7 +168,9 @@ class simple_trainer(object):
                 milestone = self.step // self.save_and_sample_every
                 data_1, data_2 = next(self.dataloader)
                 data_t1, data_t2, t_1, t_2 = self.generate_xt1_xt2(data_1, data_2, device='cuda')
-                max_time = self.time_steps.to(device='cuda')
+                # create max_time as a tensor of shape batch_size
+                # given that the max_time is self.time_steps as a int
+                max_time = torch.tensor(self.time_steps, dtype=torch.float).to(device = 'cuda')
                 data_t2_hat = self.model(data_t1, t_2-t_1)
                 data_syn_t2 = self.model(data_t1, max_time)
 
