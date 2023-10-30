@@ -115,8 +115,12 @@ class simple_trainer(object):
         t_1 = t_1.expand(data_1.shape[0])
         t_2 = t_2.expand(data_1.shape[0])
 
-        alpha_1 = t_1 / self.time_steps
-        alpha_2 = t_2 / self.time_steps
+        alpha_1 = t_1.float() / self.time_steps
+        alpha_2 = t_2.float() / self.time_steps
+
+        # Explicitly broadcasting alpha_1 and alpha_2
+        alpha_1 = alpha_1.view(-1, 1, 1, 1)
+        alpha_2 = alpha_2.view(-1, 1, 1, 1)
 
         data_t1 = alpha_1 * data_1 + (1 - alpha_1) * data_2
         data_t2 = alpha_2 * data_1 + (1 - alpha_2) * data_2
