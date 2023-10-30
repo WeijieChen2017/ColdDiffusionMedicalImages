@@ -43,8 +43,6 @@ class simple_trainer(object):
         save_and_sample_every = 1000,
         results_folder = './results',
         load_path = None,
-        dataset = None,
-        shuffle=True
     ):
         super().__init__()
         self.model = model

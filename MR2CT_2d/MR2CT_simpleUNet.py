@@ -7,7 +7,7 @@ from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, simple_trainer, 
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=100, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
-parser.add_argument('--save_folder', default='./proj/MR2CT_simpleUNet', type=str)
+parser.add_argument('--save_folder', default='./proj/MR2CT_simpleUNet/', type=str)
 parser.add_argument('--data_path', default='./data/MR2CT/MR_x_2d/', type=str)
 parser.add_argument('--load_path', default=None, type=str)
 parser.add_argument('--time_emb', action="store_true")
@@ -52,7 +52,14 @@ trainer = simple_trainer(
     dataloader,
     time_steps = args.time_steps,
     loss_type = args.loss_type,
-    save_folder = args.save_folder,
+    image_size = 256,
+    train_batch_size = 16,
+    train_lr = 2e-5,
+    train_num_steps = args.train_epochs,         # total training steps
+    gradient_accumulate_every = 2,    # gradient accumulation steps
+    ema_decay = 0.995,                # exponential moving average decay
+    fp16 = False,                       # turn on mixed precision training with apex
+    results_folder = args.save_folder,
     load_path = args.load_path,
 )
 
