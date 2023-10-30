@@ -107,7 +107,7 @@ class simple_trainer(object):
 
     def generate_xt1_xt2(self, data_1, data_2, device):
         # generate t_1 and t_2. t_2 is from 2 to self.time_steps, and t1 is from 1 to t_2 - 1
-        t_2 = torch.randint(3, self.model.time_steps, (1,))
+        t_2 = torch.randint(3, self.time_steps, (1,))
         t_1 = torch.randint(1, t_2-1, (1,))
         assert t_1 < t_2
 
