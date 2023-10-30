@@ -107,16 +107,16 @@ class simple_trainer(object):
 
     def generate_xt1_xt2(self, data_1, data_2, device):
         # generate t_1 and t_2. t_2 is from 2 to self.time_steps, and t1 is from 1 to t_2 - 1
-        t_2 = torch.randint(3, self.time_steps, (1,))
-        t_1 = torch.randint(1, t_2-1, (1,))
-        assert t_1 < t_2
+        t_2_int = torch.randint(3, self.time_steps, (1,))
+        t_1_int = torch.randint(1, t_2_int-1, (1,))
+        assert t_1_int < t_2_int
 
         # make both t_1 and t_2 of the shape of batch_size
-        t_1 = t_1.expand(data_1.shape[0])
-        t_2 = t_2.expand(data_1.shape[0])
+        t_1 = t_1_int.expand(data_1.shape[0])
+        t_2 = t_2_int.expand(data_1.shape[0])
 
-        alpha_1 = t_1.float() / self.time_steps
-        alpha_2 = t_2.float() / self.time_steps
+        alpha_1 = t_1_int.float() / self.time_steps
+        alpha_2 = t_2_int.float() / self.time_steps
 
         # Explicitly broadcasting alpha_1 and alpha_2
         alpha_1 = alpha_1.view(-1, 1, 1, 1)
@@ -131,7 +131,7 @@ class simple_trainer(object):
         t_1 = t_1.to(device)
         t_2 = t_2.to(device)
 
-        return data_t1, data_t2, t_1, t_2
+        return data_t1, data_t2, t_1, t_2, t_1_int, t_2_int
 
     def train(self):
         # experiment = Experiment(api_key="57ArytWuo2X4cdDmgU1jxin77",
@@ -145,7 +145,7 @@ class simple_trainer(object):
             for i in range(self.gradient_accumulate_every):
                 data_1, data_2 = next(self.dataloader)
                 
-                data_t1, data_t2, t_1, t_2 = self.generate_xt1_xt2(data_1, data_2, device='cuda')
+                data_t1, data_t2, t_1, t_2, _, _ = self.generate_xt1_xt2(data_1, data_2, device='cuda')
 
                 data_t2_hat = self.model(data_t1, t_2-t_1)
                 loss = self.loss_fn(data_t2_hat, data_t2)
@@ -167,7 +167,7 @@ class simple_trainer(object):
                 # experiment.log_current_epoch(self.step)
                 milestone = self.step // self.save_and_sample_every
                 data_1, data_2 = next(self.dataloader)
-                data_t1, data_t2, t_1, t_2 = self.generate_xt1_xt2(data_1, data_2, device='cuda')
+                data_t1, data_t2, t_1, t_2, t_1_int, t_2_int = self.generate_xt1_xt2(data_1, data_2, device='cuda')
                 # create max_time as a tensor of shape batch_size
                 # given that the max_time is self.time_steps as a int
                 max_time = torch.tensor(self.time_steps, dtype=torch.float).to(device = 'cuda')
@@ -179,16 +179,13 @@ class simple_trainer(object):
                     [data_1, 'MR'],
                     [data_2, 'CT'],
                     [data_syn_t2, 'synCT'],
-                    [data_t1, 'data_t1'],
-                    [data_t2, 'data_t2'],
+                    # include the time step t_1_int in the title
+                    [data_t1, f'data_t1_{t_1_int}'],
+                    [data_t2, f'data_t2_{t_2_int}'],
                     [data_t2_hat, 'data_t2_hat'],
                 ]
 
                 # iteratively plot
-                for imgs, title in imgs_to_plot:
-                    imgs = imgs.detach().cpu()
-                    utils.save_image(imgs, str(self.results_folder / f'{title}-{milestone}.png'), nrow=6)
-
                 for imgs, title in imgs_to_plot:
                     imgs = imgs.detach().cpu()
                     utils.save_image(imgs, str(self.results_folder / f'{title}-{milestone}.png'), nrow=6)
