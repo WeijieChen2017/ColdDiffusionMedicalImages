@@ -4,4 +4,5 @@ from .network import LayerNorm, PreNorm, LinearAttention, ConvNextBlock, Unet
 from .diffusion import GaussianDiffusion
 from .dataset import DatasetPaired_Aug, DatasetPaired
 # from .trainer import Trainer
-from .simple_trainer import simple_trainer
+from .simple_trainer_MR2CT import simple_trainer
+from .simple_trainer_PVC import simple_trainer_PVC

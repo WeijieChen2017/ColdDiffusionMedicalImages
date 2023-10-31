@@ -24,7 +24,7 @@ from .utils import loss_backwards
 
 # trainer class
 
-class simple_trainer(object):
+class simple_trainer_PVC(object):
     def __init__(
         self,
         model,
@@ -111,18 +111,9 @@ class simple_trainer(object):
         # generate t_1 and t_2. t_2 is from 2 to self.time_steps, and t1 is from 1 to t_2 - 1
         t_2_int = torch.randint(3, self.time_steps, (1,))
         t_1_int = torch.randint(1, t_2_int-1, (1,))
+        t_2_int = ( t_2_int / self.time_steps ) ** (1/3)
+        t_1_int = ( t_1_int / self.time_steps ) ** (1/3)
         assert t_1_int < t_2_int
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         # make both t_1 and t_2 of the shape of batch_size
         t_1 = t_1_int.expand(data_1.shape[0])
