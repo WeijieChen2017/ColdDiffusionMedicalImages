@@ -68,7 +68,7 @@ np.random.shuffle(file_list)
 
 # move files into the folders
 for idx in range(num_train):
-    x_filename = file_list[idx, 0]
+    x_filename = file_list[idx]
     savename_x = train_folder + "MR/" + os.path.basename(x_filename)
     train_folder_list.append({
         "MR": savename_x,
@@ -77,7 +77,7 @@ for idx in range(num_train):
     print("mv {} {}".format(x_filename, savename_x))
 
 for idx in range(num_train, num_train + num_val):
-    x_filename = file_list[idx, 0]
+    x_filename = file_list[idx]
     savename_x = val_folder + "MR/" + os.path.basename(x_filename)
     val_folder_list.append({
         "MR": savename_x,
@@ -86,7 +86,7 @@ for idx in range(num_train, num_train + num_val):
     print("mv {} {}".format(x_filename, savename_x))
 
 for idx in range(num_train + num_val, num_files):
-    x_filename = file_list[idx, 0]
+    x_filename = file_list[idx]
     savename_x = test_folder + "MR/" + os.path.basename(x_filename)
     test_folder_list.append({
         "MR": savename_x,
