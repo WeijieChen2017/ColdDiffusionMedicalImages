@@ -69,7 +69,7 @@ np.random.shuffle(file_list)
 # move files into the folders
 for idx in range(num_train):
     x_filename = file_list[idx]
-    savename_x = train_folder + "MR/" + os.path.basename(x_filename)
+    savename_x = train_folder + "/" + os.path.basename(x_filename)
     train_folder_list.append({
         "MR": savename_x,
     })
@@ -78,7 +78,7 @@ for idx in range(num_train):
 
 for idx in range(num_train, num_train + num_val):
     x_filename = file_list[idx]
-    savename_x = val_folder + "MR/" + os.path.basename(x_filename)
+    savename_x = val_folder + "/" + os.path.basename(x_filename)
     val_folder_list.append({
         "MR": savename_x,
     })
@@ -87,7 +87,7 @@ for idx in range(num_train, num_train + num_val):
 
 for idx in range(num_train + num_val, num_files):
     x_filename = file_list[idx]
-    savename_x = test_folder + "MR/" + os.path.basename(x_filename)
+    savename_x = test_folder + "/" + os.path.basename(x_filename)
     test_folder_list.append({
         "MR": savename_x,
     })
@@ -95,7 +95,7 @@ for idx in range(num_train + num_val, num_files):
     print("mv {} {}".format(x_filename, savename_x))
 
 # save the split as a json file, and save the json file
-json_file = "./data/MR2CT/split.json"
+json_file = "./data/PVC/split.json"
 split_dict = {
     "train": train_folder_list,
     "val": val_folder_list,
