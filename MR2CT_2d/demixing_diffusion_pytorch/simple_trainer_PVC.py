@@ -2,6 +2,7 @@
 import gc
 import copy
 import torch
+import json
 from torch import nn
 from functools import partial
 
@@ -78,6 +79,7 @@ class simple_trainer_PVC(object):
         self.dataloader = data_loader
         self.max_time = torch.tensor(self.time_steps, dtype=torch.float)
         self.max_time = self.max_time.expand(self.batch_size).to(device='cuda')
+        self.loss_recorder = []
 
     def reset_parameters(self):
         self.ema_model.load_state_dict(self.model.state_dict())
@@ -159,6 +161,7 @@ class simple_trainer_PVC(object):
 
                 if self.step % 100 == 0:
                     print(f'{self.step}: {loss.item()}')
+                    self.loss_recorder.append(loss.item())
                 u_loss += loss.item()
                 backwards(loss / self.gradient_accumulate_every, self.opt)
 
@@ -207,6 +210,9 @@ class simple_trainer_PVC(object):
                 acc_loss = acc_loss/(self.save_and_sample_every+1)
                 # experiment.log_metric("Training Loss", acc_loss, step=self.step)
                 print(f'Mean of last {self.step}: {acc_loss}')
+                # save the loss as a json file
+                with open(str(self.results_folder / f'loss-{milestone}.json'), 'w') as f:
+                    json.dump(self.loss_recorder, f)
                 acc_loss=0
 
                 self.save()
