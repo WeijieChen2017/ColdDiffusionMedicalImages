@@ -2,7 +2,8 @@ import os
 import numpy as np
 import argparse
 from torch.utils import data
-from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, simple_trainer, cycle
+from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, cycle
+from demixing_diffusion_pytorch import simple_trainer_PVC as simple_trainer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=1000, type=int)
