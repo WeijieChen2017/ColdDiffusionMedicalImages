@@ -149,6 +149,9 @@ class simple_trainer_PVC(object):
             for i in range(self.gradient_accumulate_every):
                 data_1, data_2 = next(self.dataloader)
                 
+                # for PET, divide the data by its max value
+                data_2 = data_2 / data_2.max()
+
                 data_t1, data_t2, t_1, t_2, _, _ = self.generate_xt1_xt2(data_1, data_2, device='cuda')
 
                 data_t2_hat = self.model(data_t1, t_2-t_1)
@@ -171,6 +174,10 @@ class simple_trainer_PVC(object):
                 # experiment.log_current_epoch(self.step)
                 milestone = self.step // self.save_and_sample_every
                 data_1, data_2 = next(self.dataloader)
+
+                # for PET, divide the data by its max value
+                data_2 = data_2 / data_2.max()
+
                 data_t1, data_t2, t_1, t_2, t_1_int, t_2_int = self.generate_xt1_xt2(data_1, data_2, device='cuda')
                 # create max_time as a tensor of shape batch_size
                 # given that the max_time is self.time_steps as a int
@@ -180,8 +187,8 @@ class simple_trainer_PVC(object):
 
                 imgs_to_plot = [
                     # imgs, title
-                    [data_1, 'MR'],
-                    [data_2, 'CT'],
+                    [data_1, 'oriMR'],
+                    [data_2, 'pseMR'],
                     # [data_syn_t2, 'synCT'],
                     # include the time step t_1_int in the title
                     [data_t1, f'data_t1_{int(t_1_int)}'],
