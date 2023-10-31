@@ -119,8 +119,8 @@ class simple_trainer_PVC(object):
         t_1 = t_1_int.expand(data_1.shape[0])
         t_2 = t_2_int.expand(data_1.shape[0])
 
-        alpha_1 = (t_1_int.float() / self.time_steps) ** (1/3)
-        alpha_2 = (t_2_int.float() / self.time_steps) ** (1/3)
+        alpha_1 = (t_1_int.float() / self.time_steps) ** 3
+        alpha_2 = (t_2_int.float() / self.time_steps) ** 3
 
         # Explicitly broadcasting alpha_1 and alpha_2
         alpha_1 = alpha_1.view(-1, 1, 1, 1)
