@@ -93,7 +93,7 @@ for folder in [x_save_folder_train, y_save_folder_train, x_save_folder_val, y_sa
 
 # copy files from the original folder to the new folder
 for filepath in train_file_list:
-    x_filepath = filepath
+    x_filepath = filepath["MR"]
     x_img = nib.load(x_filepath)
     new_filename_x = x_save_folder_train + x_filepath.split("/")[-1]
     os.system("cp {} {}".format(x_filepath, new_filename_x))
@@ -106,7 +106,7 @@ for filepath in train_file_list:
     print("save {} to {}".format(x_filepath, new_filename_y))
 
 for filepath in val_file_list:
-    x_filepath = filepath
+    x_filepath = filepath["MR"]
     x_img = nib.load(x_filepath)
     new_filename_x = x_save_folder_val + x_filepath.split("/")[-1]
     os.system("cp {} {}".format(x_filepath, new_filename_x))
@@ -119,7 +119,7 @@ for filepath in val_file_list:
     print("save {} to {}".format(x_filepath, new_filename_y))
 
 for filepath in test_file_list:
-    x_filepath = filepath
+    x_filepath = filepath["MR"]
     x_img = nib.load(x_filepath)
     new_filename_x = x_save_folder_test + x_filepath.split("/")[-1]
     os.system("cp {} {}".format(x_filepath, new_filename_x))
