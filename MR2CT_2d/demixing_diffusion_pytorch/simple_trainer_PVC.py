@@ -150,6 +150,7 @@ class simple_trainer_PVC(object):
                 data_1, data_2 = next(self.dataloader)
                 
                 # for PET, divide the data by its max value
+                data_1 = data_1 / data_1.max()
                 data_2 = data_2 / data_2.max()
 
                 data_t1, data_t2, t_1, t_2, _, _ = self.generate_xt1_xt2(data_1, data_2, device='cuda')
@@ -177,6 +178,7 @@ class simple_trainer_PVC(object):
                 data_1, data_2 = next(self.dataloader)
 
                 # for PET, divide the data by its max value
+                data_1 = data_1 / data_1.max()
                 data_2 = data_2 / data_2.max()
 
                 data_t1, data_t2, t_1, t_2, t_1_int, t_2_int = self.generate_xt1_xt2(data_1, data_2, device='cuda')
