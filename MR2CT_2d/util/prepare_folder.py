@@ -37,6 +37,8 @@ def prepare_folder(data_folder, modality="MR", isDelete=False):
         elif modality == "CT":
             img_data = np.clip(img_data, -1024, 3000)
             img_data = img_data / 4024
+        elif modality == "Normed":
+            img_data = np.clip(img_data, 0, 1)
         else:
             raise ValueError("modality should be MR or CT")
 
