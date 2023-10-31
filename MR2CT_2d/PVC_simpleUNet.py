@@ -10,7 +10,7 @@ parser.add_argument('--time_steps', default=1000, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
 parser.add_argument('--batch_size', default=8, type=int)   
 parser.add_argument('--save_folder', default='./proj/PVC_simpleUNet/', type=str)
-parser.add_argument('--data_path', default='./data/PVC/oriMR_x_2d/', type=str)
+parser.add_argument('--data_path', default='./data/PVC/pseMR_y_2d/', type=str)
 parser.add_argument('--load_path', default=None, type=str)
 parser.add_argument('--time_emb', action="store_true")
 parser.add_argument('--residual', action="store_true")
@@ -40,7 +40,7 @@ dataloader = cycle(data.DataLoader(
     DatasetPaired_Aug(
         folder = args.data_path,
         image_size = 256,
-        keywords=["oriMR_x", "pseMR_y"],)
+        keywords=["pseMR_y", "oriMR_x"],)
     , 
     batch_size = args.batch_size, 
     shuffle="True", 
