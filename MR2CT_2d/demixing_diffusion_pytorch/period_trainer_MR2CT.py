@@ -2,7 +2,6 @@
 import gc
 import copy
 import torch
-import json
 from torch import nn
 from functools import partial
 
@@ -25,7 +24,7 @@ from .utils import loss_backwards
 
 # trainer class
 
-class simple_trainer_PVC(object):
+class period_trainer_MR2CT(object):
     def __init__(
         self,
         model,
@@ -79,7 +78,6 @@ class simple_trainer_PVC(object):
         self.dataloader = data_loader
         self.max_time = torch.tensor(self.time_steps, dtype=torch.float)
         self.max_time = self.max_time.expand(self.batch_size).to(device='cuda')
-        self.loss_recorder = []
 
     def reset_parameters(self):
         self.ema_model.load_state_dict(self.model.state_dict())
@@ -114,13 +112,13 @@ class simple_trainer_PVC(object):
         t_2_int = torch.randint(3, self.time_steps, (1,))
         t_1_int = torch.randint(1, t_2_int-1, (1,))
         assert t_1_int < t_2_int
-        
+
         # make both t_1 and t_2 of the shape of batch_size
         t_1 = t_1_int.expand(data_1.shape[0])
         t_2 = t_2_int.expand(data_1.shape[0])
 
-        alpha_1 = (t_1_int.float() / self.time_steps)
-        alpha_2 = (t_2_int.float() / self.time_steps)
+        alpha_1 = t_1_int.float() / self.time_steps
+        alpha_2 = t_2_int.float() / self.time_steps
 
         # Explicitly broadcasting alpha_1 and alpha_2
         alpha_1 = alpha_1.view(-1, 1, 1, 1)
@@ -149,10 +147,6 @@ class simple_trainer_PVC(object):
             for i in range(self.gradient_accumulate_every):
                 data_1, data_2 = next(self.dataloader)
                 
-                # for PET, divide the data by its max value
-                data_1 = data_1 / data_1.max()
-                data_2 = data_2 / data_2.max()
-
                 data_t1, data_t2, t_1, t_2, _, _ = self.generate_xt1_xt2(data_1, data_2, device='cuda')
 
                 data_t2_hat = self.model(data_t1, t_2-t_1)
@@ -160,7 +154,6 @@ class simple_trainer_PVC(object):
 
                 if self.step % 100 == 0:
                     print(f'{self.step}: {loss.item()}')
-                    self.loss_recorder.append(loss.item())
                 u_loss += loss.item()
                 backwards(loss / self.gradient_accumulate_every, self.opt)
 
@@ -176,11 +169,6 @@ class simple_trainer_PVC(object):
                 # experiment.log_current_epoch(self.step)
                 milestone = self.step // self.save_and_sample_every
                 data_1, data_2 = next(self.dataloader)
-
-                # for PET, divide the data by its max value
-                data_1 = data_1 / data_1.max()
-                data_2 = data_2 / data_2.max()
-
                 data_t1, data_t2, t_1, t_2, t_1_int, t_2_int = self.generate_xt1_xt2(data_1, data_2, device='cuda')
                 # create max_time as a tensor of shape batch_size
                 # given that the max_time is self.time_steps as a int
@@ -190,8 +178,8 @@ class simple_trainer_PVC(object):
 
                 imgs_to_plot = [
                     # imgs, title
-                    [data_1, 'pseMR'],
-                    [data_2, 'oriMR'],
+                    [data_1, 'MR'],
+                    [data_2, 'CT'],
                     # [data_syn_t2, 'synCT'],
                     # include the time step t_1_int in the title
                     [data_t1, f'data_t1_{int(t_1_int)}'],
@@ -210,9 +198,6 @@ class simple_trainer_PVC(object):
                 acc_loss = acc_loss/(self.save_and_sample_every+1)
                 # experiment.log_metric("Training Loss", acc_loss, step=self.step)
                 print(f'Mean of last {self.step}: {acc_loss}')
-                # save the loss as a json file
-                with open(str(self.results_folder / f'loss-{milestone}.json'), 'w') as f:
-                    json.dump(self.loss_recorder, f)
                 acc_loss=0
 
                 self.save()

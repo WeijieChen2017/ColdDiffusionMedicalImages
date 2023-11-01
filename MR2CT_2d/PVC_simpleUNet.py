@@ -3,7 +3,7 @@ import numpy as np
 import argparse
 from torch.utils import data
 from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, cycle
-from demixing_diffusion_pytorch import simple_trainer_PVC as simple_trainer
+from demixing_diffusion_pytorch import period_trainer_PVC as trainer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=1000, type=int)
@@ -49,7 +49,7 @@ dataloader = cycle(data.DataLoader(
     drop_last=True)
 )
 
-trainer = simple_trainer(
+trainer = trainer(
     model,
     dataloader,
     time_steps = args.time_steps,

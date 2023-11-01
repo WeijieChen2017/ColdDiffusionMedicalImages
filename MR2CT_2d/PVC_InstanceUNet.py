@@ -3,19 +3,19 @@ import numpy as np
 import argparse
 from torch.utils import data
 from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, cycle
-from demixing_diffusion_pytorch import period_trainer_MR2CT as trainer
+from demixing_diffusion_pytorch import instance_trainer_PVC as trainer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=1000, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
 parser.add_argument('--batch_size', default=8, type=int)   
-parser.add_argument('--save_folder', default='./proj/MR2CT_simpleUNet/', type=str)
-parser.add_argument('--data_path', default='./data/MR2CT/MR_x_2d/', type=str)
+parser.add_argument('--save_folder', default='./proj/PVC_InstanceUNet/', type=str)
+parser.add_argument('--data_path', default='./data/PVC/pseMR_y_2d/', type=str)
 parser.add_argument('--load_path', default=None, type=str)
 parser.add_argument('--time_emb', action="store_true")
 parser.add_argument('--residual', action="store_true")
 parser.add_argument('--loss_type', default='l1', type=str)
-parser.add_argument('--gpu_list', default='3', type=str)
+parser.add_argument('--gpu_list', default='2', type=str)
 
 
 args = parser.parse_args()
@@ -39,7 +39,8 @@ model = Unet(
 dataloader = cycle(data.DataLoader(
     DatasetPaired_Aug(
         folder = args.data_path,
-        image_size = 256,)
+        image_size = 256,
+        keywords=["pseMR_y", "oriMR_x"],)
     , 
     batch_size = args.batch_size, 
     shuffle="True", 
