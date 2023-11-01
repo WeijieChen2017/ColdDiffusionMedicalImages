@@ -131,8 +131,7 @@ class instance_trainer_PVC(object):
         # move to device
         data_t1 = data_t1.to(device)
         data_t2 = data_t2.to(device)
-        t_1 = t_1.to(device)
-        t_2 = t_2.to(device)
+        t = t.to(device)
 
         return data_t1, data_t2, t, t_int
 
