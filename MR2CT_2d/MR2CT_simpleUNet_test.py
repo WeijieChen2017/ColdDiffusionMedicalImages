@@ -72,7 +72,7 @@ trainer = trainer(
 )
 
 # trainer.load(args.load_path) # this is automatically done in the trainer class
-
+trainer.eval(args.eval_jumps)
 
 
 
