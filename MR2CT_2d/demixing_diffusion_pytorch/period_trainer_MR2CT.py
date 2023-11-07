@@ -212,6 +212,7 @@ class period_trainer_MR2CT(object):
 
     def eval_jumps(self, n_jumps, time_steps):
         self.model.eval()
+        self.model = self.model.to(device='cuda')
         # self.ema_model.eval()
 
         HU_error = []

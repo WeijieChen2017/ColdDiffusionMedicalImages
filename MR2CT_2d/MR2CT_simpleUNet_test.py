@@ -36,9 +36,9 @@ model = Unet(
 )
 
 # load the model
-model.load_state_dict(torch.load(args.model_path))
-model.cuda()
-model.eval()
+# model.load_state_dict(torch.load(args.model_path))
+# model.cuda()
+# model.eval()
 
 dataloader = cycle(data.DataLoader(
     DatasetPaired_Aug(
