@@ -228,7 +228,9 @@ class period_trainer_MR2CT(object):
             img1 = img1.to(device='cuda')
             img2_hat = []
             for i in range(n_jumps):
-                curr_img2_hat = self.model(img1, s_step[i])
+                t = torch.tensor(s_step[i], dtype=torch.float)
+                t = t.expand(1).to(device='cuda')
+                curr_img2_hat = self.model(img1, t)
                 curr_step += s_step[i]
                 curr_img2_hat = curr_img2_hat.detach().cpu()
                 img2_hat.append(curr_img2_hat)
