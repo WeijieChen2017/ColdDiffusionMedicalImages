@@ -221,7 +221,7 @@ class period_trainer_MR2CT(object):
         # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
         s_step = [int(time_steps/n_jumps) for i in range(1, n_jumps+1)]
         # last step should be time_steps
-        s_step[-1] = time_steps - sum(s_step[:-1] - 1)
+        s_step[-1] = time_steps - sum(s_step[:-1]) - 1
         print("s_step: ", s_step)
 
         for batch_idx, data in enumerate(self.dataloader):
