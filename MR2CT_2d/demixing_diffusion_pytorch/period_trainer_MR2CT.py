@@ -220,7 +220,8 @@ class period_trainer_MR2CT(object):
 
         # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
         s_step = [int(time_steps/n_jumps) for i in range(1, n_jumps+1)]
-        s_step[-1] -= 1 # last step should be time_steps
+        # last step should be time_steps
+        s_step[-1] = time_steps - sum(s_step[:-1])
 
         for batch_idx, data in enumerate(self.dataloader):
             curr_step = 1
@@ -265,7 +266,7 @@ class period_trainer_MR2CT(object):
                 plt.axis('off')
 
             plt.subplot(1, n_plot, n_plot)
-            # plot_3 = img2[0,0,:,:].detach().cpu()
+            plot_3 = img2[0,0,:,:]
             plot_3 = np.rot90(plot_3)
             plt.imshow(plot_3, cmap='gray')
             plt.title('CT')
