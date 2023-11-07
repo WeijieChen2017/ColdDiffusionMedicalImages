@@ -4,6 +4,8 @@ import copy
 import torch
 from torch import nn
 from functools import partial
+import matplotlib.pyplot as plt
+import numpy as np
 
 from pathlib import Path
 from torch.optim import Adam
@@ -207,3 +209,72 @@ class period_trainer_MR2CT(object):
             self.step += 1
 
         print('training completed')
+
+    def eval_jumps(self, n_jumps, time_steps):
+        self.model.eval()
+        # self.ema_model.eval()
+
+        HU_error = []
+
+
+        # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
+        s_step = [int(time_steps/n_jumps) for i in range(1, n_jumps+1)]
+        s_step[-1] -= 1 # last step should be time_steps
+
+        for batch_idx, data in enumerate(self.dataloader):
+            curr_step = 1
+            img1, img2 = data
+            img1 = img1.to(device='cuda')
+            img2_hat = []
+            for i in range(n_jumps):
+                curr_img2_hat = self.model(img1, s_step[i])
+                curr_step += s_step[i]
+                curr_img2_hat = curr_img2_hat.detach().cpu()
+                img2_hat.append(curr_img2_hat)
+
+            # we need to compute the error between img2_hat[-1] and img2
+            gt = img2
+            pred = img2_hat[-1]
+            # compute the error
+            HU_error.append(torch.mean(torch.abs(gt - pred))*4024)
+            print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
+            
+            # plot imgs and save
+            # left to right: img1, all img2_hat, img2
+            # the width of output img is 4*(n_jumps+2)
+            n_plot = n_jumps + 2
+            plot_width = 4*n_plot
+            plt.figure(figsize=(plot_width, 8), dpi=300)
+
+            plt.subplot(1, n_plot, 1)
+            plot_1 = img1[0,0,:,:].detach().cpu()
+            plot_1 = np.rot90(plot_1)
+            plt.imshow(plot_1, cmap='gray')
+            plt.title('MR')
+            plt.axis('off')
+
+            for i in range(n_jumps):
+                plt.subplot(1, n_plot, i+2)
+                plot_2 = img2_hat[i][0,0,:,:]
+                plot_2 = np.rot90(plot_2)
+                plt.imshow(plot_2, cmap='gray')
+                plt.title(f'step = {curr_step}')
+                plt.axis('off')
+
+            plt.subplot(1, n_plot, n_plot)
+            # plot_3 = img2[0,0,:,:].detach().cpu()
+            plot_3 = np.rot90(plot_3)
+            plt.imshow(plot_3, cmap='gray')
+            plt.title('CT')
+            plt.axis('off')
+
+            plt.savefig(f'./results/MR2CT_period/eval_{n_jumps}_jumps_{batch_idx}.png')
+
+        # save the HU_error
+        np.save(f'./results/MR2CT_period/HU_error_{n_jumps}_jumps.npy', HU_error)
+
+
+             
+
+            
+        

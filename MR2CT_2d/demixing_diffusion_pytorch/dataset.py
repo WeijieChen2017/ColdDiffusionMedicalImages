@@ -7,12 +7,15 @@ from torchvision import transforms
 import numpy as np
 
 class DatasetPaired_Aug(data.Dataset):
-    def __init__(self, folder, image_size, keywords=['MR_x', 'CT_y'], exts=['npy']):
+    def __init__(self, folder, image_size, keywords=['MR_x', 'CT_y'], exts=['npy'], stage=['train']):
         super().__init__()
         self.folder = folder
         self.image_size = image_size
         self.keywords = keywords
-        self.paths = [p for ext in exts for p in Path(f'{folder}').glob(f'**/*.{ext}')]
+        self.stage = stage
+        self.paths = []
+        for stage_key in self.stage:
+            self.paths = self.paths + [p for ext in exts for p in Path(f'{folder}').glob(f'{stage_key}/*.{ext}')]
 
         self.transform = transforms.Compose([
             # Add any other transformations that should be applied to both images
