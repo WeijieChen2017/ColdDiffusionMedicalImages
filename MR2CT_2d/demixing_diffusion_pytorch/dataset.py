@@ -14,6 +14,9 @@ class DatasetPaired_Aug(data.Dataset):
         self.keywords = keywords
         self.stage = stage
         self.paths = []
+        # if the self.stage is not a list, then convert it to a list
+        if not isinstance(self.stage, list):
+            self.stage = [self.stage]
         for stage_key in self.stage:
             self.paths = self.paths + [p for ext in exts for p in Path(f'{folder}').glob(f'{stage_key}/*.{ext}')]
 
