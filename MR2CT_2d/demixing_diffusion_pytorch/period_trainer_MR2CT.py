@@ -273,6 +273,7 @@ class period_trainer_MR2CT(object):
             plt.axis('off')
 
             plt.savefig(f'./results/MR2CT_period/eval_{n_jumps}_jumps_{batch_idx}.png')
+            plt.close()
 
         # save the HU_error
         np.save(f'./results/MR2CT_period/HU_error_{n_jumps}_jumps.npy', HU_error)
