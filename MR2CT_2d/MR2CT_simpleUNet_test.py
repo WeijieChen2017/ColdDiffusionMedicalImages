@@ -7,7 +7,7 @@ from demixing_diffusion_pytorch import period_trainer_MR2CT as trainer
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=1000, type=int)
-parser.add_argument('--eval_jumps', default=1, type=int)
+parser.add_argument('--n_jumps', default=1, type=int)
 parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
 parser.add_argument('--save_folder', default='./results/MR2CT_simpleUNet/', type=str)
@@ -72,7 +72,7 @@ trainer = trainer(
 )
 
 # trainer.load(args.load_path) # this is automatically done in the trainer class
-trainer.eval_jumps(args.eval_jumps, args.time_steps)
+trainer.eval_jumps(args.n_jumps, args.time_steps)
 
 
 
