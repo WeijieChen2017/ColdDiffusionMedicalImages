@@ -252,7 +252,7 @@ class period_trainer_MR2CT(object):
                 curr_img2_hat = curr_img2_hat.detach().cpu()
 
                 plt.subplot(1, n_plot, i+2)
-                plot_2 = curr_img2_hat[i][0,0,:,:]
+                plot_2 = curr_img2_hat[0,0,:,:]
                 plot_2 = np.rot90(plot_2)
                 plt.imshow(plot_2, cmap='gray')
                 plt.title(f'step = {curr_step}')
