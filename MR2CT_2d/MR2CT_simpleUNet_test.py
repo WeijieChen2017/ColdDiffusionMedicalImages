@@ -8,6 +8,7 @@ from demixing_diffusion_pytorch import period_trainer_MR2CT as trainer
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=1000, type=int)
 parser.add_argument('--eval_jumps', default=1, type=int)
+parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--save_folder', default='./results/MR2CT_simpleUNet/', type=str)
 parser.add_argument('--load_path', default='./proj/MR2CT_simpleUNet/model_600000.pt', type=str)
 parser.add_argument('--data_path', default='./data/MR2CT/MR_x_2d/', type=str)
@@ -46,7 +47,7 @@ dataloader = cycle(data.DataLoader(
         image_size = 256,
         stage='test',)
     , 
-    batch_size = 1, 
+    batch_size = args.batch_size, 
     shuffle="Fasle", 
     pin_memory=True, 
     num_workers=16, 
