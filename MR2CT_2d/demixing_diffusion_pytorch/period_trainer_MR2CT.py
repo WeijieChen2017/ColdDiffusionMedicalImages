@@ -221,29 +221,15 @@ class period_trainer_MR2CT(object):
         # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
         s_step = [int(time_steps/n_jumps) for i in range(1, n_jumps+1)]
         # last step should be time_steps
-        s_step[-1] = time_steps - sum(s_step[:-1])
+        s_step[-1] = time_steps - sum(s_step[:-1] - 1)
         print("s_step: ", s_step)
 
         for batch_idx, data in enumerate(self.dataloader):
             curr_step = 1
             img1, img2 = data
             img1 = img1.to(device='cuda')
-            img2_hat = []
-            for i in range(n_jumps):
-                t = torch.tensor(s_step[i], dtype=torch.float)
-                t = t.expand(1).to(device='cuda')
-                curr_img2_hat = self.model(img1, t)
-                curr_step += s_step[i]
-                curr_img2_hat = curr_img2_hat.detach().cpu()
-                img2_hat.append(curr_img2_hat)
+            curr_img = img1
 
-            # we need to compute the error between img2_hat[-1] and img2
-            gt = img2
-            pred = img2_hat[-1]
-            # compute the error
-            HU_error.append(torch.mean(torch.abs(gt - pred))*4024)
-            print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
-            
             # plot imgs and save
             # left to right: img1, all img2_hat, img2
             # the width of output img is 4*(n_jumps+2)
@@ -259,12 +245,27 @@ class period_trainer_MR2CT(object):
             plt.axis('off')
 
             for i in range(n_jumps):
+                t = torch.tensor(s_step[i], dtype=torch.float)
+                t = t.expand(1).to(device='cuda')
+                curr_img2_hat = self.model(curr_img, t)
+                curr_step += s_step[i]
+                curr_img2_hat = curr_img2_hat.detach().cpu()
+
                 plt.subplot(1, n_plot, i+2)
-                plot_2 = img2_hat[i][0,0,:,:]
+                plot_2 = curr_img2_hat[i][0,0,:,:]
                 plot_2 = np.rot90(plot_2)
                 plt.imshow(plot_2, cmap='gray')
                 plt.title(f'step = {curr_step}')
                 plt.axis('off')
+
+                curr_img = curr_img2_hat.to(device='cuda')
+
+            # we need to compute the error between img2_hat[-1] and img2
+            gt = img2
+            pred = curr_img2_hat
+            # compute the error
+            HU_error.append(torch.mean(torch.abs(gt - pred))*4024)
+            print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
 
             plt.subplot(1, n_plot, n_plot)
             plot_3 = img2[0,0,:,:]
