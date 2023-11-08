@@ -71,6 +71,7 @@ class period_trainer_MR2CT(object):
         self.fp16 = fp16
 
         self.reset_parameters()
+        self.load_path = load_path
 
         if load_path != None:
             self.load(load_path)
