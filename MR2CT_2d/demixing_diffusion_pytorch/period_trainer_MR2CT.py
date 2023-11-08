@@ -25,6 +25,7 @@ from torch.nn import L1Loss, MSELoss
 
 from .network import EMA
 from .utils import loss_backwards
+from skimage.metrics import structural_similarity as ssim
 
 # trainer class
 
@@ -225,6 +226,18 @@ class period_trainer_MR2CT(object):
         # self.ema_model.eval()
 
         HU_error = []
+        dice_bone = []
+        PSNR = []
+        SSIM = []
+        # get the checkpoint name
+        numbers = re.findall(r'\d+', self.load_path.split('/')[-1].split('.')[0])
+
+        # Extract the first sequence of digits and convert it to an integer
+        # then format it with a 'K' to denote thousands
+        num_with_k = f"{int(numbers[0])//1000}K" if numbers else None
+        save_path = f'./results/MR2CT_period/pt{num_with_k}/'
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
 
 
         # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
@@ -272,11 +285,26 @@ class period_trainer_MR2CT(object):
             # we need to compute the error between img2_hat[-1] and img2
             # original is 0-3000, we divide it by 4024
             # gt = (img2 * 4024 - 1024) / 4024
-            gt = img2
+            gt = img2 * 4024
             pred = curr_img2_hat
-            # compute the error
-            HU_error.append(torch.mean(torch.abs(gt - pred))*4024)
+            # compute the HU error i.e. MAE
+            HU_error.append(torch.mean(torch.abs(gt - pred)))
             print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
+
+            # compute the dice score
+            gt = gt.detach().cpu().numpy()
+            pred = pred.detach().cpu().numpy()
+            gt = np.squeeze(gt)
+            pred = np.squeeze(pred)
+            mask = gt > 500
+            dice_bone.append(2*np.sum(gt[mask]*pred[mask])/(np.sum(gt[mask])+np.sum(pred[mask])))
+
+            # compute the PSNR
+            mse = np.mean((gt - pred)**2)
+            PSNR.append(20*np.log10(3000/np.sqrt(mse)))
+
+            # compute the SSIM
+            SSIM.append(ssim(gt, pred, data_range=4024))
 
             plt.subplot(1, n_plot, n_plot)
             plot_3 = img2[0,0,:,:]
@@ -285,24 +313,19 @@ class period_trainer_MR2CT(object):
             plt.title('CT')
             plt.axis('off')
 
-            plt.savefig(f'./results/MR2CT_period/eval_{n_jumps}_jumps_{batch_idx}.png')
+            plt.savefig(save_path+f'eval_{n_jumps}_jumps_{batch_idx}.png')
             plt.close()
 
             if batch_idx == n_test:
                 break
 
-        # get the checkpoint name
-        numbers = re.findall(r'\d+', self.load_path.split('/')[-1].split('.')[0])
-
-        # Extract the first sequence of digits and convert it to an integer
-        # then format it with a 'K' to denote thousands
-        num_with_k = f"{int(numbers[0])//1000}K" if numbers else None
-        save_path = f'./results/MR2CT_period/pt{num_with_k}/'
-        if not os.path.exists(save_path):
-            os.makedirs(save_path)
-
-        # save the HU_error
-        np.save(save_path+f'HU_error_{n_jumps}_jumps_test_{n_test}.npy', HU_error)
+        # save the metrics
+        metrics = {}
+        metrics['HU_error'] = HU_error
+        metrics['dice_bone'] = dice_bone
+        metrics['PSNR'] = PSNR
+        metrics['SSIM'] = SSIM
+        np.save(save_path+f'metric_{n_jumps}_jumps_{n_test}_test.npy', metrics)
 
 
              
