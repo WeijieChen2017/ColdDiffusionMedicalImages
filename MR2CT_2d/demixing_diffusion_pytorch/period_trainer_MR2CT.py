@@ -118,8 +118,8 @@ class period_trainer_MR2CT(object):
             t_1_int = torch.randint(1, t_2_int-1, (1,))
             assert t_1_int < t_2_int
         else:
-            t_2_int = 1000
-            t_1_int = 0
+            t_2_int = torch.tensor(self.time_steps, dtype=torch.int)
+            t_1_int = torch.tensor(0, dtype=torch.int)
 
         # make both t_1 and t_2 of the shape of batch_size
         t_1 = t_1_int.expand(data_1.shape[0])
