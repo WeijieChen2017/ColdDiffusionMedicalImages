@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import argparse
+import random
 from torch.utils import data
 from demixing_diffusion_pytorch import Unet, DatasetPaired_Aug, cycle
 from demixing_diffusion_pytorch import period_trainer_MR2CT as trainer
@@ -18,10 +19,25 @@ parser.add_argument('--time_emb', action="store_true")
 parser.add_argument('--residual', action="store_true")
 parser.add_argument('--loss_type', default='l1', type=str)
 parser.add_argument('--gpu_list', default='0', type=str)
+parser.add_argument('--seed', default=426, type=int)
+
 
 
 args = parser.parse_args()
 print(args)
+
+SEED = args.seed
+
+# Set the random seed for all the libraries
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed(SEED)
+    torch.cuda.manual_seed_all(SEED)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
 
 # set gpu list
 gpu_list = args.gpu_list

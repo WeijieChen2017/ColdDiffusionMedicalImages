@@ -235,7 +235,7 @@ class period_trainer_MR2CT(object):
             # the width of output img is 4*(n_jumps+2)
             n_plot = n_jumps + 2
             plot_width = 4*n_plot
-            plt.figure(figsize=(plot_width, 8), dpi=300)
+            plt.figure(figsize=(plot_width, 4), dpi=300)
 
             plt.subplot(1, n_plot, 1)
             plot_1 = img1[0,0,:,:].detach().cpu()
