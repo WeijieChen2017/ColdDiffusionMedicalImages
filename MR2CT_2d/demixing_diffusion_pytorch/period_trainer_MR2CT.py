@@ -262,8 +262,8 @@ class period_trainer_MR2CT(object):
 
             # we need to compute the error between img2_hat[-1] and img2
             # original is 0-3000, we divide it by 4024
-            gt = (img2 * 4024 - 1024) / 4024
-            # gt = img2
+            # gt = (img2 * 4024 - 1024) / 4024
+            gt = img2
             pred = curr_img2_hat
             # compute the error
             HU_error.append(torch.mean(torch.abs(gt - pred))*4024)
