@@ -26,8 +26,16 @@ parser.add_argument('--seed', default=426, type=int)
 args = parser.parse_args()
 print(args)
 
-SEED = args.seed
+# set gpu list
+gpu_list = args.gpu_list
+os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
+print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
+import torch
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+
+
+SEED = args.seed
 # Set the random seed for all the libraries
 random.seed(SEED)
 np.random.seed(SEED)
@@ -39,12 +47,7 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-# set gpu list
-gpu_list = args.gpu_list
-os.environ['CUDA_VISIBLE_DEVICES'] = gpu_list
-print('export CUDA_VISIBLE_DEVICES=' + gpu_list)
-import torch
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 model = Unet(
     dim = 64,
