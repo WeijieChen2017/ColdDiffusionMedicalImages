@@ -1,5 +1,7 @@
 # from comet_ml import Expeiment
 import gc
+import os
+import re
 import copy
 import torch
 from torch import nn
@@ -290,10 +292,17 @@ class period_trainer_MR2CT(object):
                 break
 
         # get the checkpoint name
-        checkpoint_name = int(self.load_path.split('/')[-1].split('.')[0]) // 1000
+        numbers = re.findall(r'\d+', self.load_path.split('/')[-1].split('.')[0])
+
+        # Extract the first sequence of digits and convert it to an integer
+        # then format it with a 'K' to denote thousands
+        num_with_k = f"{int(numbers[0])//1000}K" if numbers else None
+        save_path = f'./results/MR2CT_period/pt{num_with_k}/'
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
 
         # save the HU_error
-        np.save(f'./results/MR2CT_period/pt{checkpoint_name}_HU_error_{n_jumps}_jumps_test_{n_test}.npy', HU_error)
+        np.save(save_path+f'HU_error_{n_jumps}_jumps_test_{n_test}.npy', HU_error)
 
 
              
