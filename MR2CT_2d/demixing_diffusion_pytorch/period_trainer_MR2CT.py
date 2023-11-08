@@ -288,8 +288,11 @@ class period_trainer_MR2CT(object):
             if batch_idx == n_test:
                 break
 
+        # get the checkpoint name
+        checkpoint_name = int(self.load_path.split('/')[-1].split('.')[0]) // 1000
+
         # save the HU_error
-        np.save(f'./results/MR2CT_period/HU_error_{n_jumps}_jumps.npy', HU_error)
+        np.save(f'./results/MR2CT_period/pt{checkpoint_name}_HU_error_{n_jumps}_jumps_test_{n_test}.npy', HU_error)
 
 
              
