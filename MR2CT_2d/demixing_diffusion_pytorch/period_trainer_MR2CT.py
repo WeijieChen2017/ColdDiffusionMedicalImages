@@ -46,6 +46,7 @@ class period_trainer_MR2CT(object):
         save_and_sample_every = 1000,
         results_folder = './results',
         load_path = None,
+        end_to_end = False,
     ):
         super().__init__()
         self.model = model
@@ -80,6 +81,7 @@ class period_trainer_MR2CT(object):
         self.dataloader = data_loader
         self.max_time = torch.tensor(self.time_steps, dtype=torch.float)
         self.max_time = self.max_time.expand(self.batch_size).to(device='cuda')
+        self.end_to_end = end_to_end
 
     def reset_parameters(self):
         self.ema_model.load_state_dict(self.model.state_dict())
@@ -111,9 +113,13 @@ class period_trainer_MR2CT(object):
 
     def generate_xt1_xt2(self, data_1, data_2, device):
         # generate t_1 and t_2. t_2 is from 2 to self.time_steps, and t1 is from 1 to t_2 - 1
-        t_2_int = torch.randint(3, self.time_steps, (1,))
-        t_1_int = torch.randint(1, t_2_int-1, (1,))
-        assert t_1_int < t_2_int
+        if self.end_to_end is False:
+            t_2_int = torch.randint(3, self.time_steps, (1,))
+            t_1_int = torch.randint(1, t_2_int-1, (1,))
+            assert t_1_int < t_2_int
+        else:
+            t_2_int = 1000
+            t_1_int = 0
 
         # make both t_1 and t_2 of the shape of batch_size
         t_1 = t_1_int.expand(data_1.shape[0])

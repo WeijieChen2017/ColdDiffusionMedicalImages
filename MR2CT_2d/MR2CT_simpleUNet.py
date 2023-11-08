@@ -16,6 +16,7 @@ parser.add_argument('--time_emb', action="store_true")
 parser.add_argument('--residual', action="store_true")
 parser.add_argument('--loss_type', default='l1', type=str)
 parser.add_argument('--gpu_list', default='3', type=str)
+parser.add_argument('--end_to_end', action="store_true")
 
 
 args = parser.parse_args()
@@ -62,6 +63,7 @@ trainer = trainer(
     fp16 = False,                       # turn on mixed precision training with apex
     results_folder = args.save_folder,
     load_path = args.load_path,
+    end_to_end = args.end_to_end,
 )
 
 trainer.train()
