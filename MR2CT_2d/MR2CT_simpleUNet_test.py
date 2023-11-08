@@ -8,6 +8,7 @@ from demixing_diffusion_pytorch import period_trainer_MR2CT as trainer
 parser = argparse.ArgumentParser()
 parser.add_argument('--time_steps', default=1000, type=int)
 parser.add_argument('--n_jumps', default=1, type=int)
+parser.add_argument('--n_test', default=-1, type=int)
 parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
 parser.add_argument('--save_folder', default='./results/MR2CT_simpleUNet/', type=str)
@@ -42,18 +43,17 @@ model = Unet(
 # model.cuda()
 # model.eval()
 
-dataloader = cycle(data.DataLoader(
+dataloader = data.DataLoader(
     DatasetPaired_Aug(
         folder = args.data_path,
         image_size = 256,
         stage='test',)
     , 
     batch_size = args.batch_size, 
-    shuffle="Fasle", 
+    shuffle="False", 
     pin_memory=True, 
     num_workers=16, 
     drop_last=False)
-)
 
 trainer = trainer(
     model,
@@ -72,7 +72,7 @@ trainer = trainer(
 )
 
 # trainer.load(args.load_path) # this is automatically done in the trainer class
-trainer.eval_jumps(args.n_jumps, args.time_steps)
+trainer.eval_jumps(args.n_jumps, args.time_steps, args.n_test)
 
 
 

@@ -210,7 +210,7 @@ class period_trainer_MR2CT(object):
 
         print('training completed')
 
-    def eval_jumps(self, n_jumps, time_steps):
+    def eval_jumps(self, n_jumps, time_steps, n_test=-1):
         self.model.eval()
         self.model = self.model.to(device='cuda')
         # self.ema_model.eval()
@@ -276,6 +276,9 @@ class period_trainer_MR2CT(object):
 
             plt.savefig(f'./results/MR2CT_period/eval_{n_jumps}_jumps_{batch_idx}.png')
             plt.close()
+
+            if batch_idx == n_test:
+                break
 
         # save the HU_error
         np.save(f'./results/MR2CT_period/HU_error_{n_jumps}_jumps.npy', HU_error)
