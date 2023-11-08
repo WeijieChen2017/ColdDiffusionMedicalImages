@@ -3,7 +3,7 @@ import re
 import shutil
 
 # Replace 'your_directory_path' with the path to the directory containing your .nii.gz files.
-your_directory_path = 'data/MR2CT/dgx2/'
+your_directory_path = './data/MR2CT/dgx2/'
 
 # Create the 'MR' and 'CT' directories if they don't exist
 mr_directory = os.path.join(your_directory_path, 'MR')
@@ -21,6 +21,8 @@ mr_pattern = re.compile(r"MIMRTL-(\d+)___MR_Resample.nii.gz")
 
 # Walk through the directory and rename the files accordingly
 for filename in os.listdir(your_directory_path):
+    print(filename)
+
     # Check if the file is a CT file
     ct_match = ct_pattern.match(filename)
     if ct_match:
