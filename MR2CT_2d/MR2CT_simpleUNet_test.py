@@ -12,7 +12,7 @@ parser.add_argument('--n_jumps', default=1, type=int)
 parser.add_argument('--n_test', default=-1, type=int)
 parser.add_argument('--batch_size', default=1, type=int)
 parser.add_argument('--train_epochs', default=700000, type=int)
-parser.add_argument('--save_folder', default='./results/MR2CT_simpleUNet/', type=str)
+parser.add_argument('--save_folder', default='./results/MR2CT_typeB/', type=str)
 parser.add_argument('--load_path', default='./proj/MR2CT_simpleUNet/model_600000.pt', type=str)
 parser.add_argument('--data_path', default='./data/MR2CT/MR_x_2d/', type=str)
 parser.add_argument('--time_emb', action="store_true")
@@ -90,8 +90,12 @@ trainer = trainer(
     load_path = args.load_path,
 )
 
+# create folder if not exisit
+if not os.path.exists(args.save_folder):
+    os.makedirs(args.save_folder)
+
 # trainer.load(args.load_path) # this is automatically done in the trainer class
-trainer.eval_jumps(args.n_jumps, args.time_steps, args.n_test)
+trainer.eval_jumps(args.n_jumps, args.time_steps, args.n_test, args.save_folder)
 
 
 

@@ -220,7 +220,7 @@ class period_trainer_MR2CT(object):
 
         print('training completed')
 
-    def eval_jumps(self, n_jumps, time_steps, n_test=-1):
+    def eval_jumps(self, n_jumps, time_steps, n_test=-1, save_folder="./results/"):
         self.model.eval()
         self.model = self.model.to(device='cuda')
         # self.ema_model.eval()
@@ -235,9 +235,13 @@ class period_trainer_MR2CT(object):
         # Extract the first sequence of digits and convert it to an integer
         # then format it with a 'K' to denote thousands
         num_with_k = f"{int(numbers[0])//1000}K" if numbers else None
-        save_path = f'./results/MR2CT_period/pt{num_with_k}/'
+        save_path = save_folder + f'/pt{num_with_k}/'
         if not os.path.exists(save_path):
             os.makedirs(save_path)
+        save_path = save_folder + f'/{n_jumps}_jumps/'
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        
 
 
         # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
@@ -332,6 +336,7 @@ class period_trainer_MR2CT(object):
         metrics['PSNR'] = PSNR
         metrics['SSIM'] = SSIM
         np.save(save_path+f'metric_{n_jumps}_jumps_{n_test}_test.npy', metrics)
+        print("metrics saved to: ", save_path+f'metric_{n_jumps}_jumps_{n_test}_test.npy')
 
 
              
