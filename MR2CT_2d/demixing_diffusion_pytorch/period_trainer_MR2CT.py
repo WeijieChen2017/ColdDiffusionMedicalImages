@@ -294,13 +294,14 @@ class period_trainer_MR2CT(object):
             print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
 
             # compute the dice score
-            gt = gt.detach().cpu().numpy()
-            pred = pred.detach().cpu().numpy()
-            gt = np.squeeze(gt)
-            pred = np.squeeze(pred)
-            mask = gt > 500
-            dice_bone.append(2*np.sum(gt[mask]*pred[mask])/(np.sum(gt[mask])+np.sum(pred[mask])))
-
+            ground_truth = gt > 500
+            prediction = pred > 500
+            ground_truth = ground_truth.astype(bool)
+            prediction = prediction.astype(bool)
+            intersection = np.logical_and(ground_truth, prediction)
+            curr_dice = 2. * intersection.sum() / (ground_truth.sum() + prediction.sum())
+            dice_bone.append(curr_dice)
+            
             # compute the PSNR
             mse = np.mean((gt - pred)**2)
             PSNR.append(20*np.log10(3000/np.sqrt(mse)))
