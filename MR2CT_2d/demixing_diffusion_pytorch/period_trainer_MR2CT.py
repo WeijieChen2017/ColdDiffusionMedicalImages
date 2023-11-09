@@ -292,7 +292,8 @@ class period_trainer_MR2CT(object):
             pred = pred.detach().cpu().numpy()
             # print(gt.size(), pred.size())
             # compute the HU error i.e. MAE
-            HU_error.append(torch.mean(torch.abs(gt - pred)))
+            HU_error.append(np.mean(np.abs(gt - pred)))
+            # HU_error.append(torch.mean(torch.abs(gt - pred)))
             print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
 
             # compute the dice score
