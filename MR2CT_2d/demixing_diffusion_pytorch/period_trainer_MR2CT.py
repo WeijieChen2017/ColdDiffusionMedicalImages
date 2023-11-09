@@ -238,7 +238,7 @@ class period_trainer_MR2CT(object):
         save_path = save_folder + f'/pt{num_with_k}/'
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        save_path = save_folder + f'/{n_jumps}_jumps/'
+        save_path = save_path + f'/jumps_{n_jumps}/'
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         
