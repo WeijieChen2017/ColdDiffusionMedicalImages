@@ -286,7 +286,9 @@ class period_trainer_MR2CT(object):
             # original is 0-3000, we divide it by 4024
             # gt = (img2 * 4024 - 1024) / 4024
             gt = img2 * 4024
+            gt = np.clip(gt, -1024, 3000)
             pred = curr_img2_hat
+            print(gt.size(), pred.size())
             # compute the HU error i.e. MAE
             HU_error.append(torch.mean(torch.abs(gt - pred)))
             print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
