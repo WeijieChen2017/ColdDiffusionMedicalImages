@@ -26,7 +26,7 @@ from .utils import loss_backwards
 
 # trainer class
 
-class period_trainer_MR2CT(object):
+class instance_trainer_MR2CT(object):
     def __init__(
         self,
         model,

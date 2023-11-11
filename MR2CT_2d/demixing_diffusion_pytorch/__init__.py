@@ -7,3 +7,4 @@ from .dataset import DatasetPaired_Aug, DatasetPaired
 from .period_trainer_MR2CT import period_trainer_MR2CT
 from .period_trainer_PVC import period_trainer_PVC
 from .instance_trainer_PVC import instance_trainer_PVC
+from .instance_trainer_MR2CT import instance_trainer_MR2CT
