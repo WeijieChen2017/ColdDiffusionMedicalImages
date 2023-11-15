@@ -272,11 +272,11 @@ class instance_trainer_MR2CT(object):
             
 
 
-            # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
-            s_step = [int(time_steps/n_jumps) for i in range(1, n_jumps+1)]
-            # last step should be time_steps
-            s_step[-1] = time_steps - sum(s_step[:-1]) - 1
-            print("s_step: ", s_step)
+            # # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
+            # s_step = [int(time_steps/n_jumps) for i in range(1, n_jumps+1)]
+            # # last step should be time_steps
+            # s_step[-1] = time_steps - sum(s_step[:-1]) - 1
+            # print("s_step: ", s_step)
 
             for batch_idx, data in enumerate(self.dataloader):
                 curr_step = 1
@@ -301,8 +301,8 @@ class instance_trainer_MR2CT(object):
                 plt.axis('off')
 
                 curr_img = img1
-                t = torch.tensor(0, dtype=torch.float)
-                for i in range(self.time_steps):
+                t = torch.tensor(1, dtype=torch.float)
+                for i in range(self.time_steps-1):
                     curr_img = self.model(curr_img, t)
                     t += 1
 
