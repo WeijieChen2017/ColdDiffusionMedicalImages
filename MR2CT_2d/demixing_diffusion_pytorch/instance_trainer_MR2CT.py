@@ -77,7 +77,8 @@ class instance_trainer_MR2CT(object):
         self.reset_parameters()
 
         if load_path != None:
-            self.load(load_path)
+            self.load_path = load_path
+            self.load(self.load_path)
 
         self.time_steps = time_steps
         self.loss_type = loss_type
