@@ -1,5 +1,7 @@
 # from comet_ml import Expeiment
 import gc
+import os
+import re
 import copy
 import torch
 from torch import nn
@@ -23,6 +25,8 @@ from torch.nn import L1Loss, MSELoss
 
 from .network import EMA
 from .utils import loss_backwards
+
+from skimage.metrics import structural_similarity as ssim
 
 # trainer class
 
@@ -243,12 +247,28 @@ class instance_trainer_MR2CT(object):
 
         print('training completed')
 
-    def eval_jumps(self, n_jumps, time_steps, n_test=-1):
+def eval_jumps(self, n_jumps, time_steps, n_test=-1, save_folder="./results/"):
         self.model.eval()
         self.model = self.model.to(device='cuda')
         # self.ema_model.eval()
 
         HU_error = []
+        dice_bone = []
+        PSNR = []
+        SSIM = []
+        # get the checkpoint name
+        numbers = re.findall(r'\d+', self.load_path.split('/')[-1].split('.')[0])
+
+        # Extract the first sequence of digits and convert it to an integer
+        # then format it with a 'K' to denote thousands
+        num_with_k = f"{int(numbers[0])//1000}K" if numbers else None
+        save_path = save_folder + f'/pt{num_with_k}/'
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        save_path = save_path + f'/jumps_{n_jumps}/'
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        
 
 
         # start from 1, end at time_steps, step size = int(time_steps/n_jumps)
@@ -267,7 +287,9 @@ class instance_trainer_MR2CT(object):
             # left to right: img1, all img2_hat, img2
             # the width of output img is 4*(n_jumps+2)
             n_plot = n_jumps + 2
-            plot_width = 4*n_plot
+            n_plot = 3
+            # plot_width = 4*n_plot
+            plot_width = 8
             plt.figure(figsize=(plot_width, 4), dpi=300)
 
             plt.subplot(1, n_plot, 1)
@@ -277,30 +299,69 @@ class instance_trainer_MR2CT(object):
             plt.title('MR')
             plt.axis('off')
 
-            for i in range(n_jumps):
-                t = torch.tensor(s_step[i], dtype=torch.float)
-                t = t.expand(1).to(device='cuda')
-                curr_img2_hat = self.model(curr_img, t)
-                curr_step += s_step[i]
-                curr_img2_hat = curr_img2_hat.detach().cpu()
+            curr_img = img1
+            t = torch.tensor(0, dtype=torch.float)
+            for i in range(self.time_steps):
+                curr_img = self.model(curr_img, t)
+                t += 1
 
-                plt.subplot(1, n_plot, i+2)
-                plot_2 = curr_img2_hat[0,0,:,:]
-                plot_2 = np.rot90(plot_2)
-                plt.imshow(plot_2, cmap='gray')
-                plt.title(f'step = {curr_step}')
-                plt.axis('off')
+            curr_img2_hat = curr_img.detach().cpu()
 
-                curr_img = curr_img2_hat.to(device='cuda')
+            plt.subplot(1, n_plot, 2)
+            plot_2 = curr_img2_hat[0,0,:,:]
+            plot_2 = np.rot90(plot_2)
+            plt.imshow(plot_2, cmap='gray')
+            plt.title(f'step = {self.time_steps}')
+            plt.axis('off')
+
+            curr_step += 1
+            curr_img = curr_img2_hat.to(device='cuda')
+
+            # for i in range(n_jumps):
+            #     t = torch.tensor(s_step[i], dtype=torch.float)
+            #     t = t.expand(1).to(device='cuda')
+            #     curr_img2_hat = self.model(curr_img, t)
+            #     curr_step += s_step[i]
+            #     curr_img2_hat = curr_img2_hat.detach().cpu()
+
+            #     plt.subplot(1, n_plot, i+2)
+            #     plot_2 = curr_img2_hat[0,0,:,:]
+            #     plot_2 = np.rot90(plot_2)
+            #     plt.imshow(plot_2, cmap='gray')
+            #     plt.title(f'step = {curr_step}')
+            #     plt.axis('off')
+
+            #     curr_img = curr_img2_hat.to(device='cuda')
 
             # we need to compute the error between img2_hat[-1] and img2
             # original is 0-3000, we divide it by 4024
             # gt = (img2 * 4024 - 1024) / 4024
-            gt = img2
-            pred = curr_img2_hat
-            # compute the error
-            HU_error.append(torch.mean(torch.abs(gt - pred))*4024)
+            gt = np.squeeze(img2[:, 1, :, :]) * 4024
+            gt = gt.detach().cpu().numpy()
+            gt = np.clip(gt, -1024, 3000)
+            pred = np.squeeze(curr_img2_hat[:, 1, :, :])*4024
+            pred = pred.detach().cpu().numpy()
+            # print(gt.size(), pred.size())
+            # compute the HU error i.e. MAE
+            HU_error.append(np.mean(np.abs(gt - pred)))
+            # HU_error.append(torch.mean(torch.abs(gt - pred)))
             print(f'batch_idx: {batch_idx}, HU_error: {HU_error[-1]}')
+
+            # compute the dice score
+            ground_truth = gt > 500
+            prediction = pred > 500
+            ground_truth = ground_truth.astype(bool)
+            prediction = prediction.astype(bool)
+            intersection = np.logical_and(ground_truth, prediction)
+            curr_dice = 2. * intersection.sum() / (ground_truth.sum() + prediction.sum())
+            dice_bone.append(curr_dice)
+            
+            # compute the PSNR
+            mse = np.mean((gt - pred)**2)
+            PSNR.append(20*np.log10(3000/np.sqrt(mse)))
+
+            # compute the SSIM
+            SSIM.append(ssim(gt, pred, data_range=4024))
 
             plt.subplot(1, n_plot, n_plot)
             plot_3 = img2[0,0,:,:]
@@ -309,14 +370,21 @@ class instance_trainer_MR2CT(object):
             plt.title('CT')
             plt.axis('off')
 
-            plt.savefig(f'./results/MR2CT_period/eval_{n_jumps}_jumps_{batch_idx}.png')
+            plt.savefig(save_path+f'eval_{n_jumps}_jumps_{batch_idx}.png')
             plt.close()
 
             if batch_idx == n_test:
                 break
 
-        # save the HU_error
-        np.save(f'./results/MR2CT_period/HU_error_{n_jumps}_jumps.npy', HU_error)
+        # save the metrics
+        metrics = {}
+        metrics['HU_error'] = HU_error
+        metrics['dice_bone'] = dice_bone
+        metrics['PSNR'] = PSNR
+        metrics['SSIM'] = SSIM
+        np.save(save_path+f'metric_{n_jumps}_jumps_{n_test}_test.npy', metrics)
+        print("metrics saved to: ", save_path+f'metric_{n_jumps}_jumps_{n_test}_test.npy')
+
 
 
              
