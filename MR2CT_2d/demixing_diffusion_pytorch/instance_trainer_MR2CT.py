@@ -286,7 +286,7 @@ def eval_jumps(self, n_jumps, time_steps, n_test=-1, save_folder="./results/"):
             # plot imgs and save
             # left to right: img1, all img2_hat, img2
             # the width of output img is 4*(n_jumps+2)
-            n_plot = n_jumps + 2
+            # n_plot = n_jumps + 2
             n_plot = 3
             # plot_width = 4*n_plot
             plot_width = 8
