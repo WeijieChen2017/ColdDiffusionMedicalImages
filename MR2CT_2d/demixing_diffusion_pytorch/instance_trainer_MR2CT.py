@@ -305,7 +305,8 @@ class instance_trainer_MR2CT(object):
                 t = t.expand(1).to(device='cuda')
                 for i in range(self.time_steps-1):
                     print(i, end="")
-                    curr_img = self.model(curr_img, t)
+                    with torch.no_grad():
+                        curr_img = self.model(curr_img, t)
                     t += 1
 
                 curr_img2_hat = curr_img.detach().cpu()
