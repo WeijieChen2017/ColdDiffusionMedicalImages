@@ -302,8 +302,9 @@ class instance_trainer_MR2CT(object):
 
                 curr_img = img1
                 t = torch.tensor(1, dtype=torch.float)
+                t = t.expand(1).to(device='cuda')
                 for i in range(self.time_steps-1):
-                    print(i, end="")
+                    # print(i, end="")
                     curr_img = self.model(curr_img, t)
                     t += 1
 
