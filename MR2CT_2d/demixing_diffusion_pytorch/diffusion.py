@@ -192,7 +192,7 @@ class GaussianDiffusion(nn.Module):
         return X1_0s, X_ts
 
     def q_sample(self, x_start, x_end, t):
-        # simply use the alphas to interpolate
+        # simply use the alphas to interpolate according to denoise_fn
         return (
                 extract(self.sqrt_alphas_cumprod, t, x_start.shape) * x_start +
                 extract(self.sqrt_one_minus_alphas_cumprod, t, x_start.shape) * x_end

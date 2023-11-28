@@ -23,7 +23,7 @@ cmd_list = [
     # "python MR2CT_simpleUNet_test.py --load_path ./proj/MR2CT_typeB/model_400000.pt --n_jumps 4",
     # "python MR2CT_simpleUNet_test.py --load_path ./proj/MR2CT_typeA/model_400000.pt --n_jumps 1",
     # "python MR2CT_simpleUNet_test.py --load_path ./proj/MR2CT_typeA/model_400000.pt --n_jumps 2",
-    "python MR2CT_simpleUNet_test.py --load_path ./proj/MR2CT_InstanceUNet/model_400000.pt --n_jumps 1000",  
+    "python MR2CT_InstanceUNet_test.py --load_path ./proj/MR2CT_InstanceUNet/model_400000.pt --n_jumps 1000",  
 ]
 
 for cmd in cmd_list:

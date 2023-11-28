@@ -33,8 +33,6 @@ parser.add_argument('--sampling_routine', default='default', type=str)
 parser.add_argument('--remove_time_embed', action="store_true")
 parser.add_argument('--residual', action="store_true")
 parser.add_argument('--loss_type', default='l1', type=str)
-
-# add options for gpu list
 parser.add_argument('--gpu_list', default='0', type=str)
 
 
